@@ -49,11 +49,11 @@ public class MainActivity extends AppCompatActivity {
     public static int KDTreeLeafMaxPoints = 50;
     public static int QuadTreeLeafMaxPoints = 16;
 
-    public static int k = 100;
-    public static String kmFile ="25km";
+    public static int k = 5;
+    public static String kmFile ="5km";
     public static String sorted_input = kmFile + "_sorted.txt";
     public static String unsorted_input = kmFile + ".txt";
-    public static String choice = "rtree";  //1:linear 2:sqlite_default, sqlite_rtree, sqlite_spatialite 3:sqlserver 4:kd 5:quad 6:rtree
+    public static String choice = "sqlite_spatialite";  //1:linear 2:sqlite_default, sqlite_rtree, sqlite_spatialite 3:sqlserver 4:kd 5:quad 6:rtree
     public static double starting_km = 0.05;
 
     public static String table = "geopoints_" + kmFile;

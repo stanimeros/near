@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Near</string>
+    <string name="peopleClose">People close to you</string>
+    <string name="todo">TODO</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="or_sign_up">Or sign up</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="or_sign_in">Or sign in</string>
+    <string name="phone">Phone</string>
+    <string name="KmAway">5km away</string>
+    <string name="lastUpdated">2 hours ago</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="cancel">Cancel</string>
+    <string name="done">Done</string>
+    <string name="member">Member since September 29, 2022</string>
+    <string name="noFriends">Seems you don\'t have friends, try \nto add some.</string>
+    <string name="Member">Member since</string>
+    <string name="Error">Something went wrong!</string>
+    <string name="add_a_friend">Add a friend</string>
+    <string name="friend_requests">Friend Requests</string>
+    <string name="when_people_ask_to_be_friends_you_ll_see_their_n_requests_here">When people ask to be friends, you\'ll see their \n requests here.</string>
+    <string name="add">Add</string>
+    <string name="_6980911668">6980911668</string>
+    <string name="username_sent_you_a_friend_request">username sent you a friend request</string>
+</resources>

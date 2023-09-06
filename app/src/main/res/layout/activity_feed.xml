@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/base1"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    tools:context=".Feed"
+    tools:ignore="Overdraw">
+
+    <ImageView
+        android:id="@+id/imageViewFeedProfile"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/av9"
+        android:contentDescription="@string/todo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ImageContrastCheck" />
+
+    <ImageView
+        android:id="@+id/imageViewFeedToEdit"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_marginStart="10dp"
+        android:contentDescription="@string/todo"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewFeedUsername"
+        app:layout_constraintStart_toEndOf="@+id/textViewFeedUsername"
+        app:layout_constraintTop_toTopOf="@+id/textViewFeedUsername"
+        app:srcCompat="@drawable/pencil" />
+
+    <ImageView
+        android:id="@+id/imageViewFeedToFriends"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginEnd="24dp"
+        android:contentDescription="@string/todo"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewFeedProfile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageViewFeedProfile"
+        app:srcCompat="@drawable/addfriend" />
+
+    <TextView
+        android:id="@+id/textViewFeedUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:fontFamily="sans-serif-light"
+        android:text="@string/username"
+        android:textColor="@color/text"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewFeedProfile"
+        app:layout_constraintStart_toEndOf="@+id/imageViewFeedProfile"
+        app:layout_constraintTop_toTopOf="@+id/imageViewFeedProfile" />
+
+    <TextView
+        android:id="@+id/textViewFeed1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:fontFamily="sans-serif-light"
+        android:text="@string/peopleClose"
+        android:textColor="@color/text"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/imageViewFeedProfile"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewFeedProfile" />
+
+    <RelativeLayout
+        android:id="@+id/loadingLayoutFeed"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/white" />
+    </RelativeLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeToRefreshFeed"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="5dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toTopOf="@+id/textViewFeedJoinDate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewFeed1">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:ignore="SpeakableTextPresentCheck">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/linearLayoutFeed"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="-10dp"
+                    android:layout_marginBottom="14dp"
+                    android:fillViewport="true"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <TextView
+        android:id="@+id/textViewFeedJoinDate"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/base2"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text="@string/member"
+        android:textColor="@color/text"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewFeedMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="128dp"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:text="@string/noFriends"
+        android:textColor="@color/text"
+        android:textSize="12sp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/swipeToRefreshFeed"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

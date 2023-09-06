@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imageViewRequestProfile"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/av9"
+        android:contentDescription="@string/todo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewRequestUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center|center_horizontal"
+        android:text="@string/username_sent_you_a_friend_request"
+        android:textColor="@color/text"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewRequestProfile"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewAccept"
+        app:layout_constraintStart_toEndOf="@+id/imageViewRequestProfile"
+        app:layout_constraintTop_toTopOf="@+id/imageViewRequestProfile" />
+
+    <ImageView
+        android:id="@+id/imageViewAccept"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@string/todo"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewRequestProfile"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewReject"
+        app:layout_constraintTop_toTopOf="@+id/imageViewRequestProfile"
+        app:srcCompat="@drawable/accept" />
+
+    <ImageView
+        android:id="@+id/imageViewReject"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@string/todo"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewAccept"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/decline" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

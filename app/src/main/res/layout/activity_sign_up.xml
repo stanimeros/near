@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/base1"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    tools:context=".MainActivity"
+    tools:ignore="Overdraw">
+
+    <EditText
+        android:id="@+id/editTextSignUpPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="45dp"
+        android:autofillHints=""
+        android:ems="10"
+        android:fontFamily="sans-serif-light"
+        android:hint="@string/phone"
+        android:inputType="phone"
+        android:minHeight="48dp"
+        android:textColor="@color/text"
+        android:textColorHint="@color/text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSignUpTitle"
+        tools:ignore="TextContrastCheck" />
+
+    <EditText
+        android:id="@+id/editTextSignUpUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:autofillHints=""
+        android:ems="10"
+        android:fontFamily="sans-serif-light"
+        android:hint="@string/username"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:textColor="@color/text"
+        android:textColorHint="@color/text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextSignUpPhone"
+        tools:ignore="TextContrastCheck" />
+
+    <EditText
+        android:id="@+id/editTextSignUpPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:fontFamily="sans-serif-light"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:minHeight="48dp"
+        android:textColor="@color/text"
+        android:textColorHint="@color/text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextSignUpUsername"
+        tools:ignore="TextContrastCheck"
+        android:autofillHints="" />
+
+    <Button
+        android:id="@+id/buttonSignUp"
+        android:layout_width="150dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="32dp"
+        android:background="@color/base2"
+        android:fontFamily="sans-serif-light"
+        android:text="@string/sign_up"
+        android:textColor="@color/textButtons"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextSignUpPassword" />
+
+    <TextView
+        android:id="@+id/textViewSignIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="sans-serif-light"
+        android:text="@string/or_sign_in"
+        android:textAllCaps="false"
+        android:textColor="@color/text"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonSignUp" />
+
+    <TextView
+        android:id="@+id/textViewSignUpTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:fontFamily="@font/bellota_text_light"
+        android:text="@string/app_name"
+        android:textColor="@color/text"
+        android:textSize="60sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

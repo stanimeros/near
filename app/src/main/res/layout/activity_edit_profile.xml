@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/base1"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    tools:context=".EditProfile"
+    tools:ignore="Overdraw">
+
+    <TextView
+        android:id="@+id/textViewEditTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="sans-serif-light"
+        android:text="@string/edit_profile"
+        android:textColor="@color/text"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-light"
+        android:text="@string/cancel"
+        android:textColor="@color/text"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewEditTitle"
+        app:layout_constraintEnd_toStartOf="@+id/textViewEditTitle"
+        app:layout_constraintHorizontal_bias="0.2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textViewEditTitle" />
+
+    <TextView
+        android:id="@+id/textViewDone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-light"
+        android:text="@string/done"
+        android:textColor="@color/text"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewEditTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.8"
+        app:layout_constraintStart_toEndOf="@+id/textViewEditTitle"
+        app:layout_constraintTop_toTopOf="@+id/textViewEditTitle" />
+
+    <TextView
+        android:id="@+id/textViewEdit1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="75dp"
+        android:fontFamily="sans-serif-light"
+        android:text="@string/username"
+        android:textColor="@color/text"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewEditTitle" />
+
+    <EditText
+        android:id="@+id/editTextChangeUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:autofillHints=""
+        android:ems="10"
+        android:fontFamily="sans-serif-light"
+        android:hint="@string/username"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:text="@string/username"
+        android:textColor="@color/text"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewEdit1"
+        app:layout_constraintStart_toEndOf="@+id/textViewEdit1"
+        app:layout_constraintTop_toTopOf="@+id/textViewEdit1"
+        tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/flowConstraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewEdit1">
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/flowLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:flow_wrapMode="chain"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

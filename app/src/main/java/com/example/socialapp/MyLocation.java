@@ -7,10 +7,17 @@ import java.util.Random;
 
 public class MyLocation {
     private GeoPoint myPointOfInterest;
+    GeoPoint pamak = new GeoPoint((float)22.96017,(float)40.625041);
 
     public void setMyPointOfInterestSearch(GeoPoint target, String phone,Context context){
         String choice = MainActivity.choice;
         int k = MainActivity.k;
+
+        if (target.distanceTo(pamak)>100000){
+            System.out.println("Phone is too far from pamak!"); //Prevent calculations far away from dataset's center!
+            return;
+        }
+
         if (Objects.equals(choice, "linear")){
             setMyPointOfInterestLinearSearch(target,phone,k,context);
         }else if(Objects.equals(choice, "sqlite_default")) {
@@ -173,14 +180,13 @@ public class MyLocation {
             System.out.println("Generating new location using SQLServer!");
 
             System.out.println("Finding nearest point of interest..");
-            GeoPoint nearestPoint = ServerSQL.getPointsFromRange(target, 1, MainActivity.starting_km).get(0);
-            System.out.println(nearestPoint.distanceTo(target));
+            GeoPoint nearestPoint = HttpHelper.getPointsFromRange(target, 1, MainActivity.starting_km).get(0);
             double distance = nearestPoint.distanceTo(target);
             System.out.println(nearestPoint.distanceTo(target));
             distance+=10; //ADDING 10 METERS TO AVOID ZERO
 
             System.out.println("Finding K nearest to the nearest point of interest..");
-            ArrayList<GeoPoint> kNearestList = ServerSQL.getPointsFromRange(nearestPoint,k,distance/1000);
+            ArrayList<GeoPoint> kNearestList = HttpHelper.getPointsFromRange(nearestPoint,k,distance/1000);
             printMyList(kNearestList,nearestPoint);
 
             System.out.println("Selecting one of K points randomly..");

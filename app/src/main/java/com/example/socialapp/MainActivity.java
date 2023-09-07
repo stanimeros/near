@@ -2,6 +2,7 @@ package com.example.socialapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import androidx.appcompat.app.AppCompatActivity;
@@ -112,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
                         long startTime = System.currentTimeMillis();
                         SQLiteDefault sqLiteDefault = new SQLiteDefault(getBaseContext());
                         sqLiteDefault.getCount();
+
                         long endTime = System.currentTimeMillis();
                         long millis = endTime - startTime;
                         System.out.println("========= DB TOOK =========");

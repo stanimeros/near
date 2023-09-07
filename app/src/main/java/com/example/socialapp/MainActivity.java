@@ -2,7 +2,7 @@ package com.example.socialapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,18 +46,21 @@ public class MainActivity extends AppCompatActivity {
     public static String password = MyServerPassword;
 
     //METHOD CONFIGURATION
-    public static int treeMaxPoints = 100000*100;
-    public static int KDTreeLeafMaxPoints = 50;
-    public static int QuadTreeLeafMaxPoints = 16;
+    public static int treeMaxPoints = 50000*1000; //CAN BE MODIFIED --BIG(*1000) FOR ONE TREE --SMALL(*1,2,3+) FOR MULTIPLE TREES
+    public static int KDTreeLeafMaxPoints = 50; //CAN BE MODIFIED
+    public static int QuadTreeLeafMaxPoints = 16; //CAN BE MODIFIED
 
-    public static int k = 5;
-    public static String kmFile ="5km";
-    public static String sorted_input = kmFile + "_sorted.txt";
-    public static String unsorted_input = kmFile + ".txt";
+    public static int k = 5; //CAN BE MODIFIED
+    public static String kmFile ="1km"; //1km 5km 25km 100km
     public static String choice = "sqlite_spatialite";  //1:linear 2:sqlite_default, sqlite_rtree, sqlite_spatialite 3:sqlserver 4:kd 5:quad 6:rtree
-    public static double starting_km = 0.05;
+    public static double starting_km = 0.05; //CAN BE MODIFIED
 
-    public static String table = "geopoints_" + kmFile;
+    //FILE CONFIGURATION -- CHANGE ONLY kmFile
+    public static String sorted_input = kmFile + "_sorted.txt"; //CHANGE ONLY kmFile
+    public static String unsorted_input = kmFile + ".txt"; //CHANGE ONLY kmFile
+
+    public static String table = "geopoints_" + kmFile; //CHANGE ONLY kmFile
+    public static String SQLite_database = "geopoints_" + kmFile; //CHANGE ONLY kmFile
 
     //CLASS VARIABLES
     private String phone;
@@ -90,8 +93,16 @@ public class MainActivity extends AppCompatActivity {
                 thread = new Thread(() -> {
                     try {
                         long startTime = System.currentTimeMillis();
+                        if (doesDatabaseExistInAssets(SQLite_database)){
+                           SQLiteCopyFromAssets sqLiteCopyFromAssets = new SQLiteCopyFromAssets(getBaseContext());
+                            sqLiteCopyFromAssets.getCount();
+                        }
                         SQLiteSpatialite sqLiteSpatialite = new SQLiteSpatialite(getBaseContext());
                         sqLiteSpatialite.getCount();
+
+                        if (sqLiteSpatialite.getCount()==0){
+                            System.out.println("Need to remove");
+                        }
                         ArrayList<String> names = sqLiteSpatialite.getColumnsNames();
                         if (!names.contains("loc")) {
                             sqLiteSpatialite.Initialize(getBaseContext());
@@ -198,4 +209,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {}
+    public boolean doesDatabaseExistInAssets(String fileName) {
+        AssetManager assetManager = getBaseContext().getAssets();
+        try {
+            // Attempt to open the file
+            InputStream inputStream = assetManager.open("databases/"+fileName);
+            // If successful, the file exists
+            inputStream.close();
+            System.out.println("Database found on Assets!");
+            return true;
+        } catch (Exception e) {
+            // The file doesn't exist or there was an error
+            return false;
+        }
+    }
 }

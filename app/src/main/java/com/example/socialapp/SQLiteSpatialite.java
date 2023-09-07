@@ -4,24 +4,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.net.Uri;
-
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import jsqlite.Database;
 import jsqlite.Stmt;
 
 public class SQLiteSpatialite extends SQLiteOpenHelper {
     Context context;
-    private static final String DB_NAME = "db_geopoints";
+    private static final String DB_NAME = MainActivity.SQLite_database;
     private static final String TABLE_NAME = "geopoints";
 
     public SQLiteSpatialite(Context context) {

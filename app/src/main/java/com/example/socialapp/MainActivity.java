@@ -35,15 +35,19 @@ public class MainActivity extends AppCompatActivity {
     private static final String MyServerDatabase = "u223212146_social";
     private static final String MyServerUser = "u223212146_stanimeros2";
     private static final String MyServerPassword= "Stan1meross2";
+    //OKEANOS
+    private static final String okeanos = "snf-38501.ok-kno.grnetcloud.net";
+    private static final String okeanosUser = "near_users";
+    private static final String okeanosPassword = "stanimeros";
 
     //APPLICATION CONNECTION
     public static String className = MariaDBClassName;
     public static String jdbcName = MariaDBJDBCName;
-    public static String serverIp = MyServerIP;
+    public static String serverIp = okeanos;
     public static String port = MariaDBPort;
-    public static String database = MyServerDatabase;
-    public static String user = MyServerUser;
-    public static String password = MyServerPassword;
+    public static String database = SQLDatabase;
+    public static String user = okeanosUser;
+    public static String password = okeanosPassword;
 
     //METHOD CONFIGURATION
     public static int treeMaxPoints = 50000*1000; //CAN BE MODIFIED --BIG(*1000) FOR ONE TREE --SMALL(*1,2,3+) FOR MULTIPLE TREES

@@ -278,16 +278,16 @@ public class Feed extends AppCompatActivity {
                    return null;
                }
 
-               ArrayList<User> friends = temp;
+               myFriends = temp;
 
                runOnUiThread(() -> {
                    message.setVisibility(View.INVISIBLE);
                    linearLayout.removeAllViews();
                    relativeLayout.setVisibility(View.INVISIBLE);
-                   for (int i = 0; i < friends.size(); i++) {
-                       addView(friends.get(i));
+                   for (int i = 0; i < myFriends.size(); i++) {
+                       addView(myFriends.get(i));
                    }
-                   bundle.putParcelableArrayList("list",friends);
+                   bundle.putParcelableArrayList("list",myFriends);
                });
            }catch (Exception e){
                e.printStackTrace();
@@ -343,7 +343,7 @@ public class Feed extends AppCompatActivity {
                 Date now = new Date();
                 long diffInMillies = now.getTime() - Objects.requireNonNull(lastTimeUpdated).getTime();
                 long diffInSeconds = TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-                if (diffInSeconds<10){
+                if (diffInSeconds<5){ //5 SECONDS PROTECTION
                     System.out.println("Aborted:"+key+" updated "+diffInSeconds+" seconds ago!");
                     return false;
                 }

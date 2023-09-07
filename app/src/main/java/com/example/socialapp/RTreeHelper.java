@@ -45,7 +45,7 @@ public class RTreeHelper{
             }
             file.close();
             System.out.println("RTree created successfully ..");
-            saveRTree(context); //saving locally
+            //saveRTree(context); //saving locally
             long endTime = System.currentTimeMillis();
             long millis = endTime - startTime;
             System.out.println("========= RTREE CREATION TOOK =========");

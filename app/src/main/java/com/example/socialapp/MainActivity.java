@@ -33,11 +33,11 @@ public class MainActivity extends AppCompatActivity {
     //MY SERVER
     private static final String MyServerIP = "89.117.169.103";
     private static final String MyServerDatabase = "u223212146_social";
-    private static final String MyServerUser = "u223212146_stanimeros2";
+    private static final String MyServerUser = "u223212146_stanimeros2"; //ONLY SELECT INSERT UPDATE DELETE
     private static final String MyServerPassword= "Stan1meross2";
     //OKEANOS
     private static final String okeanos = "snf-38501.ok-kno.grnetcloud.net";
-    private static final String okeanosUser = "near_users";
+    private static final String okeanosUser = "near_users"; //ONLY SELECT INSERT UPDATE DELETE
     private static final String okeanosPassword = "stanimeros";
 
     //APPLICATION CONNECTION

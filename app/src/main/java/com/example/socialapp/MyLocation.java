@@ -35,6 +35,7 @@ public class MyLocation {
         }else if (Objects.equals(choice, "rtree")){
             setMyPointOfInterestRTreeSearch(target,phone,k);
         }
+
     }
     private void printMyList(ArrayList<GeoPoint> list,GeoPoint target){
         for (int i=0;i<list.size();i++){

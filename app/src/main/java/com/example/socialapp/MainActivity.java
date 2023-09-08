@@ -99,14 +99,11 @@ public class MainActivity extends AppCompatActivity {
                         long startTime = System.currentTimeMillis();
                         if (doesDatabaseExistInAssets(SQLite_database)){
                            SQLiteCopyFromAssets sqLiteCopyFromAssets = new SQLiteCopyFromAssets(getBaseContext());
-                            sqLiteCopyFromAssets.getCount();
+                            sqLiteCopyFromAssets.getWritableDb();
                         }
                         SQLiteSpatialite sqLiteSpatialite = new SQLiteSpatialite(getBaseContext());
                         sqLiteSpatialite.getCount();
 
-                        if (sqLiteSpatialite.getCount()==0){
-                            System.out.println("Need to remove");
-                        }
                         ArrayList<String> names = sqLiteSpatialite.getColumnsNames();
                         if (!names.contains("loc")) {
                             sqLiteSpatialite.Initialize(getBaseContext());

@@ -49,7 +49,7 @@ public class MyLocation {
 
             System.out.println("Finding nearest point of interest..");
             GeoPoint nearestPoint = Objects.requireNonNull(LinearSearch.kNearestLinearSearch(target, 1, context)).get(0);
-            System.out.println(nearestPoint.distanceTo(target));
+            System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
 
             System.out.println("Finding K nearest to the nearest point of interest..");
             ArrayList<GeoPoint> kNearestList = LinearSearch.kNearestLinearSearch(nearestPoint,k,context);
@@ -82,7 +82,7 @@ public class MyLocation {
 
             System.out.println("Finding nearest point of interest..");
             GeoPoint nearestPoint = sqLiteDefault.getKNearestList(1,target).get(0);
-            System.out.println(nearestPoint.distanceTo(target));
+            System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
 
             System.out.println("Finding K nearest to the nearest point of interest..");
             ArrayList<GeoPoint> kNearestList = sqLiteDefault.getKNearestList(k,nearestPoint);
@@ -115,7 +115,7 @@ public class MyLocation {
             System.out.println("Finding nearest point of interest..");
             GeoPoint nearestPoint = sqLiteRTree.getKNearestList(1,target,MainActivity.starting_km).get(0);
             double distance = nearestPoint.distanceTo(target);
-            System.out.println(nearestPoint.distanceTo(target));
+            System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
             distance+=10; //ADDING 10 METERS TO AVOID ZERO
 
             System.out.println("Finding K nearest to the nearest point of interest..");
@@ -149,7 +149,7 @@ public class MyLocation {
             System.out.println("Finding nearest point of interest..");
             GeoPoint nearestPoint = sqLiteSpatialite.getKNearestList(1,target,MainActivity.starting_km,context).get(0);
             double distance = nearestPoint.distanceTo(target);
-            System.out.println(nearestPoint.distanceTo(target));
+            System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
             distance+=10; //ADDING 10 METERS TO AVOID ZERO
 
             System.out.println("Finding K nearest to the nearest point of interest..");
@@ -182,7 +182,7 @@ public class MyLocation {
             System.out.println("Finding nearest point of interest..");
             GeoPoint nearestPoint = HttpHelper.getPointsFromRange(target, 1, MainActivity.starting_km).get(0);
             double distance = nearestPoint.distanceTo(target);
-            System.out.println(nearestPoint.distanceTo(target));
+            System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
             distance+=10; //ADDING 10 METERS TO AVOID ZERO
 
             System.out.println("Finding K nearest to the nearest point of interest..");
@@ -216,7 +216,7 @@ public class MyLocation {
             System.out.println("Finding nearest point of interest..");
             GeoPoint nearestPoint = group.findKNearestNeighbors(target,1,MainActivity.starting_km).get(0);
             double distance = nearestPoint.distanceTo(target);
-            System.out.println(nearestPoint.distanceTo(target));
+            System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
             distance+=10; //ADDING 10 METERS TO AVOID ZERO
 
             System.out.println("Finding K nearest to the nearest point of interest..");
@@ -250,7 +250,7 @@ public class MyLocation {
             System.out.println("Finding nearest point of interest..");
             GeoPoint nearestPoint = group.findKNearestNeighbors(target,1,MainActivity.starting_km).get(0);
             double distance = nearestPoint.distanceTo(target);
-            System.out.println(nearestPoint.distanceTo(target));
+            System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
             distance+=10; //ADDING 10 METERS TO AVOID ZERO
 
             System.out.println("Finding K nearest to the nearest point of interest..");
@@ -283,7 +283,7 @@ public class MyLocation {
             System.out.println("Finding nearest point of interest..");
             GeoPoint nearestPoint = RTreeHelper.getPointsFromRange(target, 1, MainActivity.starting_km).get(0);
             double distance = nearestPoint.distanceTo(target);
-            System.out.println(nearestPoint.distanceTo(target));
+            System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
             distance+=10; //ADDING 10 METERS TO AVOID ZERO
 
             System.out.println("Finding K nearest to the nearest point of interest..");

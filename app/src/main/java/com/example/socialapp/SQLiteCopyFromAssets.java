@@ -1,7 +1,6 @@
 package com.example.socialapp;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
@@ -14,20 +13,12 @@ public class SQLiteCopyFromAssets extends SQLiteAssetHelper {
         this.context = context;
     }
 
-    public int getCount() {
+    public void getWritableDb() {
         try {
-            System.loadLibrary("sqliteX");
             SQLiteDatabase db = this.getWritableDatabase();
-            Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_NAME + " AS COUNT", null);
-            cursor.moveToFirst();
-            int result = cursor.getInt(0);
-            System.out.println("TABLE SIZE: "+ result);
-            cursor.close();
             db.close();
-            return result;
         }catch (Exception e){
             e.printStackTrace();
-            return 0;
         }
     }
 

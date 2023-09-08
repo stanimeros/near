@@ -27,6 +27,7 @@
 
 <h3>Επιπλέον πληροφορίες</h3>
 <ul>
+  <li>To 100km dataset δεν υπάρχει στο assets στο project λόγω όγκου. Υπάρχει στο <a href="https://drive.google.com/drive/folders/1_DANO0D_Nn3OxCPlsbVPUt5vqUHI4xrr">Google Drive</a>/files/100km/*.txt</li>
   <li>Το αρχείο MainActivity.java περιέχει βασικές παραμέτρους.</li>
   <li>Στο αρχείο Feed.java το gps εντοπίζει αλλαγή τοποθεσίας και ξεκινάει την διαδικασία.</li>
   <li>Στο αρχείο MyLocation.java ξεκινάει η μέθοδος που έχει επιλεχθεί.</li>

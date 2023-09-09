@@ -3,6 +3,7 @@
 
 <h3>Παραμετροποίηση</h3>
 <strong>API 21+, σχεδιάστηκε σε API 26 x86</strong><br>
+<strong>Δεν ρωτάει για storage, call, contacts permissions, ακόμα.</strong><br>
 <strong>Η τοποθεσία του κινητού πρέπει να είναι εντός 100χλμ από το πανεπιστήμιο Μακεδονίας.</strong>
 
 Στην MainActivity.java υπάρχουν τα εξής:

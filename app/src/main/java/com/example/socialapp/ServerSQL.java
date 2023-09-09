@@ -283,9 +283,11 @@ public class ServerSQL {
     }
 
     public static boolean uploadResults(Long millis,String phone) {
+        String updateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+
         ServerSQLConnection serverSQLConnection = new ServerSQLConnection();
-        serverSQLConnection.Update("INSERT INTO results(method, time, phone,api,version,device,manufacturer) " +
-                "VALUES ('"+MainActivity.choice+"','"+millis+"','"+phone+"','"+Build.VERSION.SDK_INT+"','"+Build.VERSION.RELEASE+"','"+Build.MODEL+"','"+Build.MANUFACTURER+"')");
+        serverSQLConnection.Update("INSERT INTO results(method, millis, phone,api,version,device,manufacturer,time) " +
+                "VALUES ('"+MainActivity.choice+"','"+millis+"','"+phone+"','"+Build.VERSION.SDK_INT+"','"+Build.VERSION.RELEASE+"','"+Build.MODEL+"','"+Build.MANUFACTURER+"','"+updateTime+"')");
         ServerSQL.ThreadStart(serverSQLConnection);
         return serverSQLConnection.isExecuted();
     }

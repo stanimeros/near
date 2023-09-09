@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 thread = new Thread(() -> {
                     try {
                         long startTime = System.currentTimeMillis();
-                        SQLiteRTree sqLiteRTree = new SQLiteRTree(getBaseContext());
+                        SQLiteRTree sqLiteRTree = new SQLiteRTree(getApplicationContext());
                         sqLiteRTree.getCount();
                         long endTime = System.currentTimeMillis();
                         long millis = endTime - startTime;
@@ -98,16 +98,16 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         long startTime = System.currentTimeMillis();
                         if (doesDatabaseExistInAssets(database_SQLite)){
-                           //SQLiteCopyFromAssets sqLiteCopyFromAssets = new SQLiteCopyFromAssets(getBaseContext());
-                            //sqLiteCopyFromAssets.getWritableDb();
+                           SQLiteCopyFromAssets sqLiteCopyFromAssets = new SQLiteCopyFromAssets(getApplicationContext());
+                            sqLiteCopyFromAssets.getWritableDb();
                         }
-                        SQLiteSpatialite sqLiteSpatialite = new SQLiteSpatialite(getBaseContext());
+                        SQLiteSpatialite sqLiteSpatialite = new SQLiteSpatialite(getApplicationContext());
                         sqLiteSpatialite.getCount();
 
                         ArrayList<String> names = sqLiteSpatialite.getColumnsNames();
                         if (!names.contains("loc")) {
-                            sqLiteSpatialite.Initialize(getBaseContext());
-                            sqLiteSpatialite.createSpatialColumn(getBaseContext());
+                            sqLiteSpatialite.Initialize(getApplicationContext());
+                            sqLiteSpatialite.createSpatialColumn(getApplicationContext());
                         }
                         long endTime = System.currentTimeMillis();
                         long millis = endTime - startTime;
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 thread = new Thread(() -> {
                     try {
                         long startTime = System.currentTimeMillis();
-                        SQLiteDefault sqLiteDefault = new SQLiteDefault(getBaseContext());
+                        SQLiteDefault sqLiteDefault = new SQLiteDefault(getApplicationContext());
                         sqLiteDefault.getCount();
 
                         long endTime = System.currentTimeMillis();
@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {}
     public boolean doesDatabaseExistInAssets(String fileName) {
-        AssetManager assetManager = getBaseContext().getAssets();
+        AssetManager assetManager = getApplicationContext().getAssets();
         try {
             // Attempt to open the file
             InputStream inputStream = assetManager.open("databases/"+fileName);

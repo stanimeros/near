@@ -117,7 +117,8 @@ public class Feed extends AppCompatActivity {
                                }
 
                                myLocation = new MyLocation();
-                               myLocation.setMyPointOfInterestSearch(new GeoPoint((float) loc.getLongitude(),(float)loc.getLatitude()), phone,getBaseContext()); //set our location
+                               myLocation.setMyPointOfInterestSearch(new GeoPoint((float) loc.getLongitude(),(float)loc.getLatitude()), phone,getApplicationContext()); //set our location
+
                                AsyncTaskCreateList createList = new AsyncTaskCreateList();
                                runOnUiThread(createList::execute);
                            }catch (Exception e){
@@ -336,7 +337,7 @@ public class Feed extends AppCompatActivity {
 
     private boolean canUpdate(String key){
         try {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             String temp = prefs.getString(key, "");
             if (!temp.isEmpty()){
                 Date lastTimeUpdated = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(temp);

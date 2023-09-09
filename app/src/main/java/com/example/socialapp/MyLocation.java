@@ -43,7 +43,7 @@ public class MyLocation {
         }
         //System.out.println("Last point of list: "+ (list.size())+") Lon: "+list.get(list.size()-1).getLon() +" Lat: "+list.get(list.size()-1).getLat()+ " distance "+target.distanceTo(list.get(list.size()-1)));
     }
-    private void setMyPointOfInterestLinearSearch(GeoPoint target, String phone, int k, Context context) {
+    public void setMyPointOfInterestLinearSearch(GeoPoint target, String phone, int k, Context context) {
         try {
             long startTime = System.currentTimeMillis();
             System.out.println("Generating new location using Linear Search!");
@@ -77,7 +77,7 @@ public class MyLocation {
         }
     }
 
-    private void setMyPointOfInterestSQLiteDefaultSearch(GeoPoint target, String phone, int k,Context context) {
+    public void setMyPointOfInterestSQLiteDefaultSearch(GeoPoint target, String phone, int k,Context context) {
         try {
             long startTime = System.currentTimeMillis();
             SQLiteDefault sqLiteDefault = new SQLiteDefault(context);
@@ -111,7 +111,7 @@ public class MyLocation {
         }
     }
 
-    private void setMyPointOfInterestSQLiteRTreeSearch(GeoPoint target, String phone, int k,Context context) { //FAILED
+    public void setMyPointOfInterestSQLiteRTreeSearch(GeoPoint target, String phone, int k,Context context) { //FAILED
         try {
             long startTime = System.currentTimeMillis();
             SQLiteRTree sqLiteRTree = new SQLiteRTree(context);
@@ -147,7 +147,7 @@ public class MyLocation {
         }
     }
 
-    private void setMyPointOfInterestSQLiteSpatialiteSearch(GeoPoint target, String phone, int k,Context context) {
+    public void setMyPointOfInterestSQLiteSpatialiteSearch(GeoPoint target, String phone, int k,Context context) {
         try {
             long startTime = System.currentTimeMillis();
             SQLiteSpatialite sqLiteSpatialite = new SQLiteSpatialite(context);
@@ -183,7 +183,7 @@ public class MyLocation {
         }
     }
 
-    private void setMyPointOfInterestSQLServerSearch(GeoPoint target, String phone, int k) {
+    public void setMyPointOfInterestSQLServerSearch(GeoPoint target, String phone, int k) {
         try {
             long startTime = System.currentTimeMillis();
             System.out.println("Generating new location using SQLServer!");

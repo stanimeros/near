@@ -266,6 +266,9 @@ public class Feed extends AppCompatActivity {
                            addView(myFriends.get(i));
                        }
                    });
+                   runOnUiThread(() -> {
+                       swipeRefreshLayout.setRefreshing(false);
+                   });
                    return null;
                }
 
@@ -288,6 +291,9 @@ public class Feed extends AppCompatActivity {
                            linearLayout.removeAllViews();
                        });
                    }
+                   runOnUiThread(() -> {
+                       swipeRefreshLayout.setRefreshing(false);
+                   });
                    return null;
                }
 

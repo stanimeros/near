@@ -51,12 +51,12 @@ public class MainActivity extends AppCompatActivity {
 
     //METHOD CONFIGURATION
     public static int treeMaxPoints = 50000*1000; //CAN BE MODIFIED --BIG(*1000) FOR ONE TREE --SMALL(*1,2,3+) FOR MULTIPLE TREES
-    public static int KDTreeLeafMaxPoints = 50; //CAN BE MODIFIED
+    public static int KDTreeLeafMaxPoints = 64; //CAN BE MODIFIED
     public static int QuadTreeLeafMaxPoints = 16; //CAN BE MODIFIED
 
     public static int k = 5; //CAN BE MODIFIED
     public static String kmFile ="1km"; //1km 5km 25km 100km
-    public static String choice = "sqlite_spatialite";  //1:linear 2:sqlite_default, sqlite_rtree, sqlite_spatialite 3:sqlserver 4:kd 5:quad 6:rtree
+    public static String method = "sqlite_spatialite";  //1:linear 2:sqlite_default, sqlite_rtree, sqlite_spatialite 3:sqlserver 4:kd 5:quad 6:rtree
     public static double starting_km = 0.05; //CAN BE MODIFIED
 
     //FILE CONFIGURATION -- CHANGE ONLY kmFile
@@ -77,8 +77,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        method = prefs.getString("method",method);
+        k = prefs.getInt("k-anonymity",k);
+        starting_km = Double.parseDouble(prefs.getString("starting_km", String.valueOf(starting_km)));
+        kmFile = prefs.getString("kmFile","1km");
+        treeMaxPoints = prefs.getInt("treeMaxPoints",treeMaxPoints);
+        KDTreeLeafMaxPoints = prefs.getInt("KDTreeLeafMaxPoints",KDTreeLeafMaxPoints);
+        QuadTreeLeafMaxPoints = prefs.getInt("QuadTreeLeafMaxPoints",QuadTreeLeafMaxPoints);
+        thread = new Thread(() -> {
+            try {
+                //ServerSQL.getSettings(getApplicationContext()); //GET SETTINGS FROM SERVER # COMMENT THIS IF YOU WANT TO SET THEM MANUALLY
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        });
+        thread.start();
         try {
-            if (Objects.equals(choice,"sqlite_rtree")){
+            if (Objects.equals(method,"sqlite_rtree")){
                 thread = new Thread(() -> {
                     try {
                         long startTime = System.currentTimeMillis();
@@ -93,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 thread.start();
-            }else if (Objects.equals(choice,"sqlite_spatialite")){
+            }else if (Objects.equals(method,"sqlite_spatialite")){
                 thread = new Thread(() -> {
                     try {
                         long startTime = System.currentTimeMillis();
@@ -119,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 });
                 thread.start();
 
-            }else if (Objects.equals(choice,"sqlite_default")){
+            }else if (Objects.equals(method,"sqlite_default")){
                 thread = new Thread(() -> {
                     try {
                         long startTime = System.currentTimeMillis();
@@ -135,17 +151,17 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 thread.start();
-            }else if (Objects.equals(choice, "kd")){
+            }else if (Objects.equals(method, "kd")){
                 thread = new Thread(() -> {
-                    new KDTreeGroup(MainActivity.treeMaxPoints,MainActivity.KDTreeLeafMaxPoints,MainActivity.sorted_input,this);
+                    KDTreeGroup.Initialize(MainActivity.treeMaxPoints,MainActivity.KDTreeLeafMaxPoints,MainActivity.sorted_input,this);
                 });
                 thread.start();
-            }else if (Objects.equals(choice, "quad")){
+            }else if (Objects.equals(method, "quad")){
                 thread = new Thread(() -> {
-                    new QuadTreeGroup(MainActivity.treeMaxPoints,MainActivity.QuadTreeLeafMaxPoints,MainActivity.sorted_input,this);
+                    QuadTreeGroup.Initialize(MainActivity.treeMaxPoints,MainActivity.QuadTreeLeafMaxPoints,MainActivity.sorted_input,this);
                 });
                 thread.start();
-            }else if (Objects.equals(choice, "rtree")){
+            }else if (Objects.equals(method, "rtree")){
                 thread = new Thread(() -> {
                     try {
                         File file = new File(this.getFilesDir(), "rtree.bin");
@@ -168,15 +184,14 @@ public class MainActivity extends AppCompatActivity {
                 thread.start();
             }
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            phone = prefs.getString("phone","");
-            if (phone.isEmpty()){
-                goToSignUp();
-            }else{
+            if (prefs.contains("phone")){
+                phone = prefs.getString("phone","");
                 username = prefs.getString("username","");
                 joinDate = prefs.getString("joinDate","");
                 image = prefs.getInt("image",0);
                 goToFeed();
+            }else{
+                goToSignUp();
             }
         }catch (Exception e){
             e.printStackTrace();

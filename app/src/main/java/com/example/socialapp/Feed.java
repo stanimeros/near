@@ -41,6 +41,7 @@ public class Feed extends AppCompatActivity {
     private RelativeLayout relativeLayout;
     private View selectedView ;
     private TextView message;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,15 +65,12 @@ public class Feed extends AppCompatActivity {
             ImageView profile = findViewById(R.id.imageViewFeedProfile);
             profile.setImageResource(Icons.getIcons().get(image -1));
 
-            SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeToRefreshFeed);
+            swipeRefreshLayout = findViewById(R.id.swipeToRefreshFeed);
             swipeRefreshLayout.setOnRefreshListener(() -> {
                 new Thread(() -> {
                     checkPermission();
                     AsyncTaskCreateList createList = new AsyncTaskCreateList();
                     createList.execute();
-                    runOnUiThread(() -> {
-                        swipeRefreshLayout.setRefreshing(false);
-                    });
                     System.out.println("List refreshed!");
                 }).start();
             });
@@ -152,6 +150,11 @@ public class Feed extends AppCompatActivity {
             if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 System.out.println("Network location is enabled!");
             }
+
+            new Thread(() -> {
+                AsyncTaskCreateList createList = new AsyncTaskCreateList();
+                createList.execute();
+            }).start();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -290,7 +293,6 @@ public class Feed extends AppCompatActivity {
                }
 
                myFriends = temp;
-
                runOnUiThread(() -> {
                    message.setVisibility(View.INVISIBLE);
                    linearLayout.removeAllViews();
@@ -299,6 +301,10 @@ public class Feed extends AppCompatActivity {
                        addView(myFriends.get(i));
                    }
                    bundle.putParcelableArrayList("list",myFriends);
+               });
+
+               runOnUiThread(() -> {
+                   swipeRefreshLayout.setRefreshing(false);
                });
            }catch (Exception e){
                e.printStackTrace();

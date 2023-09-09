@@ -10,7 +10,7 @@ public class MyLocation {
     GeoPoint pamak = new GeoPoint((float)22.96017,(float)40.625041);
 
     public void setMyPointOfInterestSearch(GeoPoint target, String phone,Context context){
-        String choice = MainActivity.choice;
+        String method = MainActivity.method;
         int k = MainActivity.k;
 
         if (target.distanceTo(pamak)>100000){
@@ -18,21 +18,21 @@ public class MyLocation {
             return;
         }
 
-        if (Objects.equals(choice, "linear")){
+        if (Objects.equals(method, "linear")){
             setMyPointOfInterestLinearSearch(target,phone,k,context);
-        }else if(Objects.equals(choice, "sqlite_default")) {
+        }else if(Objects.equals(method, "sqlite_default")) {
             setMyPointOfInterestSQLiteDefaultSearch(target, phone, k, context);
-        }else if(Objects.equals(choice, "sqlite_rtree")) {
+        }else if(Objects.equals(method, "sqlite_rtree")) {
             setMyPointOfInterestSQLiteRTreeSearch(target, phone, k, context);
-        }else if(Objects.equals(choice, "sqlite_spatialite")){
+        }else if(Objects.equals(method, "sqlite_spatialite")){
             setMyPointOfInterestSQLiteSpatialiteSearch(target,phone,k,context);
-        }else if(Objects.equals(choice, "sqlserver")){
+        }else if(Objects.equals(method, "sqlserver")){
             setMyPointOfInterestSQLServerSearch(target,phone,k);
-        }else if (Objects.equals(choice, "kd")){
+        }else if (Objects.equals(method, "kd")){
             setMyPointOfInterestKDTreeSearch(target,phone,k,context);
-        }else if (Objects.equals(choice, "quad")){
+        }else if (Objects.equals(method, "quad")){
             setMyPointOfInterestQuadTreeSearch(target,phone,k,context);
-        }else if (Objects.equals(choice, "rtree")){
+        }else if (Objects.equals(method, "rtree")){
             setMyPointOfInterestRTreeSearch(target,phone,k);
         }
 
@@ -221,17 +221,17 @@ public class MyLocation {
     public void setMyPointOfInterestKDTreeSearch(GeoPoint target, String phone, int k, Context context){
         try {
             long startTime = System.currentTimeMillis();
-            KDTreeGroup group = new KDTreeGroup(MainActivity.treeMaxPoints,MainActivity.KDTreeLeafMaxPoints,MainActivity.sorted_input,context);
+            //KDTreeGroup group = new KDTreeGroup(MainActivity.treeMaxPoints,MainActivity.KDTreeLeafMaxPoints,MainActivity.sorted_input,context);
             System.out.println("Generating new location using KD-Tree Search!");
 
             System.out.println("Finding nearest point of interest..");
-            GeoPoint nearestPoint = group.findKNearestNeighbors(target,1,MainActivity.starting_km).get(0);
+            GeoPoint nearestPoint = KDTreeGroup.findKNearestNeighbors(target,1,MainActivity.starting_km).get(0);
             double distance = nearestPoint.distanceTo(target);
             System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
             distance+=10; //ADDING 10 METERS TO AVOID ZERO
 
             System.out.println("Finding K nearest to the nearest point of interest..");
-            ArrayList<GeoPoint> kNearestList = group.findKNearestNeighbors(nearestPoint,k,distance/1000);
+            ArrayList<GeoPoint> kNearestList = KDTreeGroup.findKNearestNeighbors(nearestPoint,k,distance/1000);
             printMyList(kNearestList,nearestPoint);
 
             System.out.println("Selecting one of K points randomly..");
@@ -257,17 +257,17 @@ public class MyLocation {
     public void setMyPointOfInterestQuadTreeSearch(GeoPoint target, String phone, int k, Context context){
         try {
             long startTime = System.currentTimeMillis();
-            QuadTreeGroup group = new QuadTreeGroup(MainActivity.treeMaxPoints,MainActivity.QuadTreeLeafMaxPoints,MainActivity.sorted_input,context);
+            //QuadTreeGroup group = new QuadTreeGroup(MainActivity.treeMaxPoints,MainActivity.QuadTreeLeafMaxPoints,MainActivity.sorted_input,context);
             System.out.println("Generating new location using Quad-Tree Search!");
 
             System.out.println("Finding nearest point of interest..");
-            GeoPoint nearestPoint = group.findKNearestNeighbors(target,1,MainActivity.starting_km).get(0);
+            GeoPoint nearestPoint = QuadTreeGroup.findKNearestNeighbors(target,1,MainActivity.starting_km).get(0);
             double distance = nearestPoint.distanceTo(target);
             System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
             distance+=10; //ADDING 10 METERS TO AVOID ZERO
 
             System.out.println("Finding K nearest to the nearest point of interest..");
-            ArrayList<GeoPoint> kNearestList = group.findKNearestNeighbors(nearestPoint,k,distance/1000);
+            ArrayList<GeoPoint> kNearestList = QuadTreeGroup.findKNearestNeighbors(nearestPoint,k,distance/1000);
             printMyList(kNearestList,nearestPoint);
 
             System.out.println("Selecting one of K points randomly..");

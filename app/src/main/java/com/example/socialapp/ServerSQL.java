@@ -1,7 +1,10 @@
 package com.example.socialapp;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
+import android.preference.PreferenceManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -287,9 +290,26 @@ public class ServerSQL {
 
         ServerSQLConnection serverSQLConnection = new ServerSQLConnection();
         serverSQLConnection.Update("INSERT INTO results(method, millis, phone,api,version,device,manufacturer,time) " +
-                "VALUES ('"+MainActivity.choice+"','"+millis+"','"+phone+"','"+Build.VERSION.SDK_INT+"','"+Build.VERSION.RELEASE+"','"+Build.MODEL+"','"+Build.MANUFACTURER+"','"+updateTime+"')");
+                "VALUES ('"+MainActivity.method+"','"+millis+"','"+phone+"','"+Build.VERSION.SDK_INT+"','"+Build.VERSION.RELEASE+"','"+Build.MODEL+"','"+Build.MANUFACTURER+"','"+updateTime+"')");
         ServerSQL.ThreadStart(serverSQLConnection);
         return serverSQLConnection.isExecuted();
+    }
+
+    public static void getSettings(Context context) {
+        ServerSQLConnection serverSQLConnection = new ServerSQLConnection();
+        serverSQLConnection.Select("SELECT * FROM settings");
+        ServerSQL.ThreadStart(serverSQLConnection);
+        ArrayList<String> results = serverSQLConnection.getResults();
+        SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        prefEditor.putString("method", results.get(0));
+        prefEditor.putInt("k-anonymity", Integer.parseInt(results.get(1)));
+        prefEditor.putString("starting_km", results.get(2));
+        prefEditor.putString("kmFile", results.get(3));
+        prefEditor.putInt("treeMaxPoints", Integer.parseInt(results.get(4)));
+        prefEditor.putInt("KDTreeLeafMaxPoints", Integer.parseInt(results.get(5)));
+        prefEditor.putInt("QuadTreeLeafMaxPoints", Integer.parseInt(results.get(6)));
+        prefEditor.apply();
+        System.out.println("SETTINGS DOWNLOADED AND WILL APPLY AFTER RESTART");
     }
 
     public static String getUsername(String phone) {

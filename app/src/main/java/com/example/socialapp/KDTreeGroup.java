@@ -14,21 +14,21 @@ import java.util.Collections;
 import java.util.Objects;
 
 public class KDTreeGroup {
-    private String input;
-    private Context context;
-    private int treeMaxPoints;
-    private int leafMaxPoints;
-    private ArrayList<Double> treeEdges = new ArrayList<>();
+    private static String input;
+    private static Context context;
+    private static int treeMaxPoints;
+    private static int leafMaxPoints;
+    private static ArrayList<Double> treeEdges = new ArrayList<>();
     private static KDTree mainTree=null;
     private static KDTree kdTrees[] =  new KDTree[1]; //UNFINISHED
     private static int keyTree= -1;
 
-    public KDTreeGroup(int treeMaxPoints, int leafMaxPoints, String input, Context context) {
+    public static void Initialize(int treeMaxPoints, int leafMaxPoints, String input, Context context) {
         try {
-            this.context = context;
-            this.input = input;
-            this.treeMaxPoints = treeMaxPoints;
-            this.leafMaxPoints = leafMaxPoints;
+            KDTreeGroup.context = context;
+            KDTreeGroup.input = input;
+            KDTreeGroup.treeMaxPoints = treeMaxPoints;
+            KDTreeGroup.leafMaxPoints = leafMaxPoints;
             Gson gson = new Gson();
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             String json = prefs.getString("KDTrees", "");
@@ -36,6 +36,10 @@ public class KDTreeGroup {
             if (tempStringArray==null){
                 System.out.println("Generating map..");
                 treeEdges = generateMap(countFileLines());
+                if (treeEdges.size()==1){
+                    mainTree = generateTree(1);
+                    keyTree = 1;
+                }
                 saveTreeGroup(treeEdges);
                 System.out.println("Map with "+treeEdges.size()+" trees saved successfully!");
             }else{
@@ -44,13 +48,18 @@ public class KDTreeGroup {
                     treeEdges.add(Double.parseDouble(tempArrayList.get(i)));
                 }
                 System.out.println("Map with "+treeEdges.size()+" trees found locally!");
+
+                if (treeEdges.size()==1){
+                    mainTree = getTree(1);
+                    keyTree = 1;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public ArrayList<GeoPoint> findKNearestNeighbors(GeoPoint target,int k,double distanceInKm){
+    public static ArrayList<GeoPoint> findKNearestNeighbors(GeoPoint target, int k, double distanceInKm){
         try {
             if (mainTree==null || keyTree!=getKeyTree(target)){
                 mainTree = Objects.requireNonNull(getMainTree(target));
@@ -117,7 +126,7 @@ public class KDTreeGroup {
         }
     }
 
-    private KDTree getMainTree(GeoPoint point){
+    private static KDTree getMainTree(GeoPoint point){
         try {
             for (int i=0;i<treeEdges.size();i++){
                 if (treeEdges.get(i)<point.getLon()){
@@ -133,7 +142,7 @@ public class KDTreeGroup {
         }
     }
 
-    private int getKeyTree(GeoPoint point){
+    private static int getKeyTree(GeoPoint point){
         try {
             for (int i=0;i<treeEdges.size();i++){
                 if (treeEdges.get(i)<point.getLon()){
@@ -148,7 +157,7 @@ public class KDTreeGroup {
         }
     }
 
-    private ArrayList<KDTree> getTreesInRange(GeoPoint point, double range){
+    private static ArrayList<KDTree> getTreesInRange(GeoPoint point, double range){
         try {
             int last = 0;
             ArrayList<KDTree> treesInRange = new ArrayList<>();
@@ -171,7 +180,7 @@ public class KDTreeGroup {
     }
 
     @SuppressLint("DefaultLocale")
-    private void printSize(String json,String key){
+    private static void printSize(String json, String key){
         byte[] byteArray;
         byteArray = json.getBytes(StandardCharsets.UTF_8);
         float size = byteArray.length;
@@ -181,7 +190,7 @@ public class KDTreeGroup {
         }
     }
 
-    private KDTree generateTree(int n){
+    private static KDTree generateTree(int n){
         try {
             BufferedReader file = new BufferedReader(new InputStreamReader(context.getAssets().open(input)));
             for (int i=0;i<(n-1)*treeMaxPoints;i++){
@@ -211,7 +220,7 @@ public class KDTreeGroup {
         }
     }
 
-    private ArrayList<Double> generateMap(int lineCount){ //Split the file to pieces
+    private static ArrayList<Double> generateMap(int lineCount){ //Split the file to pieces
         try {
             int pieces;
             String line = null;
@@ -252,7 +261,7 @@ public class KDTreeGroup {
         }
     }
 
-    private int countFileLines() {
+    private static int countFileLines() {
         try {
             int count = 0;
             BufferedReader file = new BufferedReader(new InputStreamReader(context.getAssets().open(input)));
@@ -269,7 +278,7 @@ public class KDTreeGroup {
         }
     }
 
-    private KDTree getTree(int n){ //Get the tree with the number n
+    private static KDTree getTree(int n){ //Get the tree with the number n
         try {
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -298,7 +307,7 @@ public class KDTreeGroup {
         }
     }
 
-    private void saveTree(int n, KDTree tree) {
+    private static void saveTree(int n, KDTree tree) {
         try{
             new Thread(() -> {
                 try {
@@ -333,7 +342,7 @@ public class KDTreeGroup {
         }
     }
 
-    private void saveTreeGroup(ArrayList<Double> trees){
+    private static void saveTreeGroup(ArrayList<Double> trees){
         new Thread(() -> {
             try {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);

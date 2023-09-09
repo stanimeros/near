@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("ALL")
@@ -116,9 +117,10 @@ public class Feed extends AppCompatActivity {
                                    return null;
                                }
 
+                               System.out.println("Real location:"+loc.getLongitude()+","+loc.getLatitude());
+
                                myLocation = new MyLocation();
                                myLocation.setMyPointOfInterestSearch(new GeoPoint((float) loc.getLongitude(),(float)loc.getLatitude()), phone,getApplicationContext()); //set our location
-
                                AsyncTaskCreateList createList = new AsyncTaskCreateList();
                                runOnUiThread(createList::execute);
                            }catch (Exception e){
@@ -142,6 +144,14 @@ public class Feed extends AppCompatActivity {
                 return;
             }
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, locationListener);
+            //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 10, locationListener);
+
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                System.out.println("GPS is enabled!");
+            }
+            if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                System.out.println("Network location is enabled!");
+            }
         }catch (Exception e){
             e.printStackTrace();
         }

@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     public static String unsorted_input = kmFile + ".txt"; //CHANGE ONLY kmFile
 
     public static String table = "geopoints_" + kmFile; //CHANGE ONLY kmFile
-    public static String SQLite_database = "geopoints_" + kmFile; //CHANGE ONLY kmFile
+    public static String database_SQLite = "geopoints_" + kmFile; //CHANGE ONLY kmFile
 
     //CLASS VARIABLES
     private String phone;
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 thread = new Thread(() -> {
                     try {
                         long startTime = System.currentTimeMillis();
-                        if (doesDatabaseExistInAssets(SQLite_database)){
+                        if (doesDatabaseExistInAssets(database_SQLite)){
                            SQLiteCopyFromAssets sqLiteCopyFromAssets = new SQLiteCopyFromAssets(getBaseContext());
                             sqLiteCopyFromAssets.getWritableDb();
                         }

@@ -6,10 +6,8 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 public class SQLiteCopyFromAssets extends SQLiteAssetHelper {
     Context context;
-    private static final String DB_NAME = MainActivity.SQLite_database;
-    private static final String TABLE_NAME = "geopoints";
     public SQLiteCopyFromAssets(Context context) {
-        super(context, DB_NAME, null, 1);
+        super(context, MainActivity.database_SQLite, null, 1);
         this.context = context;
     }
 

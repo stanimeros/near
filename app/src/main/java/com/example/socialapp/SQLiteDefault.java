@@ -12,11 +12,9 @@ import java.util.Arrays;
 
 public class SQLiteDefault extends SQLiteOpenHelper {
     Context context;
-    private static final String DB_NAME = "db_geopoints";
-    private static final String TABLE_NAME = "geopoints";
 
     public SQLiteDefault(Context context) {
-        super(context, DB_NAME, null, 1);
+        super(context, MainActivity.database_SQLite, null, 1);
         this.context = context;
     }
 
@@ -25,7 +23,7 @@ public class SQLiteDefault extends SQLiteOpenHelper {
         try {
             System.out.println("CREATING DB..");
 
-            String query = "CREATE TABLE " + TABLE_NAME + " ("
+            String query = "CREATE TABLE " + MainActivity.table + " ("
                     + "sin_lat TEXT,"
                     + "sin_lon TEXT,"
                     + "cos_lat TEXT,"
@@ -42,7 +40,7 @@ public class SQLiteDefault extends SQLiteOpenHelper {
                 String st_lon = line.substring(0, br);
                 String st_lat = line.substring(br + 1);
 
-                query = "INSERT INTO " + TABLE_NAME + " (sin_lat,sin_lon,cos_lat,cos_lon) VALUES ("
+                query = "INSERT INTO " + MainActivity.table + " (sin_lat,sin_lon,cos_lat,cos_lon) VALUES ("
                         + Math.sin(Math.toRadians(Double.parseDouble(st_lat))) + ","
                         + Math.sin(Math.toRadians(Double.parseDouble(st_lon))) + ","
                         + Math.cos(Math.toRadians(Double.parseDouble(st_lat))) + ","
@@ -69,14 +67,14 @@ public class SQLiteDefault extends SQLiteOpenHelper {
             String euclidean = "SELECT sin_lon,sin_lat," +
                     "(rad_lat - "+ lat +") * (rad_lat - "+ lat +") + " +
                     "(rad_lon - "+ lon +") * (rad_lon - "+ lon +") AS distance " +
-                    "FROM " + TABLE_NAME + " ORDER BY distance ASC LIMIT "+k;
+                    "FROM " + MainActivity.table + " ORDER BY distance ASC LIMIT "+k;
 
             String haversine_with_distance = "SELECT sin_lon,sin_lat, 6371.009 * 6371.009 * 0.5 * " +
                     "(1 - cos_lat * "+Math.cos(lat)+" * (cos_lon*"+Math.cos(lon)+" + sin_lon*"+Math.sin(lon)+") - sin_lat * "+Math.sin(lat)+")" +
-                    "AS distance_sq FROM " + TABLE_NAME + " ORDER BY distance_sq ASC LIMIT "+k;
+                    "AS distance_sq FROM " + MainActivity.table + " ORDER BY distance_sq ASC LIMIT "+k;
 
             String haversine = "SELECT sin_lon,sin_lat " +
-                    "FROM " + TABLE_NAME + " " +
+                    "FROM " + MainActivity.table + " " +
                     "ORDER BY 6371.009 * 6371.009 * 0.5 * " +
                     "(1 - cos_lat * "+Math.cos(lat)+" * (cos_lon*"+Math.cos(lon)+" + sin_lon*"+Math.sin(lon)+") - sin_lat * "+Math.sin(lat)+") ASC LIMIT "+k;
 
@@ -103,7 +101,7 @@ public class SQLiteDefault extends SQLiteOpenHelper {
     public int getCount() {
         try {
             SQLiteDatabase db = this.getWritableDatabase();
-            Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_NAME + " AS COUNT", null);
+            Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + MainActivity.table + " AS COUNT", null);
             cursor.moveToFirst();
             int result = cursor.getInt(0);
             System.out.println("TABLE SIZE: "+ result);
@@ -118,7 +116,7 @@ public class SQLiteDefault extends SQLiteOpenHelper {
 
     public int getColumnsCount() {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " LIMIT 0", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + MainActivity.table + " LIMIT 0", null);
         int columnCount = cursor.getColumnCount();
         cursor.close();
         db.close();
@@ -127,7 +125,7 @@ public class SQLiteDefault extends SQLiteOpenHelper {
 
     public ArrayList<String> getColumnsNames() {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " LIMIT 0", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + MainActivity.table + " LIMIT 0", null);
         String[] columnNames = cursor.getColumnNames();
         cursor.close();
         db.close();
@@ -141,14 +139,14 @@ public class SQLiteDefault extends SQLiteOpenHelper {
         values.put("lat", geoPoint.getLat());
         values.put("lon", geoPoint.getLon());
 
-        db.insert(TABLE_NAME, null, values);
+        db.insert(MainActivity.table, null, values);
         System.out.println("Added successfully!");
         db.close();
     }
 
     public void dropTable() {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DROP TABLE " + TABLE_NAME;
+        String query = "DROP TABLE " + MainActivity.table;
 
         db.execSQL(query);
         db.close();
@@ -156,7 +154,7 @@ public class SQLiteDefault extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + MainActivity.table);
         onCreate(db);
     }
 }

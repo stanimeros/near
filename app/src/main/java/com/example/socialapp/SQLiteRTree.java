@@ -13,10 +13,8 @@ import java.util.Collections;
 import java.util.Objects;
 public class SQLiteRTree extends SQLiteOpenHelper { //THIS METHOD HAS FAILED DUE TO READING REAL/TEXT PROBLEM
     Context context;
-    private static final String DB_NAME = "db_geopoints";
-    private static final String TABLE_NAME = "geopoints";
     public SQLiteRTree(Context context){
-        super(context, DB_NAME, null, 1);
+        super(context, MainActivity.database_SQLite, null, 1);
         this.context = context;
     }
 
@@ -124,7 +122,7 @@ public class SQLiteRTree extends SQLiteOpenHelper { //THIS METHOD HAS FAILED DUE
         try {
             System.loadLibrary("sqliteX");
             SQLiteDatabase db = this.getWritableDatabase();
-            Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_NAME + " AS COUNT", null);
+            Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + MainActivity.table + " AS COUNT", null);
             cursor.moveToFirst();
             int result = cursor.getInt(0);
             System.out.println("TABLE SIZE: "+ result);
@@ -140,7 +138,7 @@ public class SQLiteRTree extends SQLiteOpenHelper { //THIS METHOD HAS FAILED DUE
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int version) {
         System.loadLibrary("sqliteX");
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + MainActivity.table);
         onCreate(db);
     }
 }

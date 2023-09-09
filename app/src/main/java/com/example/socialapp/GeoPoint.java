@@ -1,7 +1,6 @@
 package com.example.socialapp;
 
 import android.location.Location;
-
 import java.io.Serializable;
 
 public class GeoPoint implements Serializable {

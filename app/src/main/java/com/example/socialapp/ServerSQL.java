@@ -1,6 +1,8 @@
 package com.example.socialapp;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -276,6 +278,14 @@ public class ServerSQL {
     public static boolean setImage(String phone,Integer image) {
         ServerSQLConnection serverSQLConnection = new ServerSQLConnection();
         serverSQLConnection.Update("UPDATE users SET image = "+image+" WHERE phone = '" +phone+ "'");
+        ServerSQL.ThreadStart(serverSQLConnection);
+        return serverSQLConnection.isExecuted();
+    }
+
+    public static boolean uploadResults(Long millis,String phone) {
+        ServerSQLConnection serverSQLConnection = new ServerSQLConnection();
+        serverSQLConnection.Update("INSERT INTO results(method, time, phone,api,version,device,manufacturer) " +
+                "VALUES ('"+MainActivity.choice+"','"+millis+"','"+phone+"','"+Build.VERSION.SDK_INT+"','"+Build.VERSION.RELEASE+"','"+Build.MODEL+"','"+Build.MANUFACTURER+"')");
         ServerSQL.ThreadStart(serverSQLConnection);
         return serverSQLConnection.isExecuted();
     }

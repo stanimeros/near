@@ -70,6 +70,8 @@ public class MyLocation {
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
             ServerSQL.setLocation(myPointOfInterest,phone);
+
+            ServerSQL.uploadResults(millis,phone);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -102,6 +104,8 @@ public class MyLocation {
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
             ServerSQL.setLocation(myPointOfInterest,phone);
+
+            ServerSQL.uploadResults(millis,phone);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -136,6 +140,8 @@ public class MyLocation {
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
             ServerSQL.setLocation(myPointOfInterest,phone);
+
+            ServerSQL.uploadResults(millis,phone);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -170,6 +176,8 @@ public class MyLocation {
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
             ServerSQL.setLocation(myPointOfInterest,phone);
+
+            ServerSQL.uploadResults(millis,phone);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -203,6 +211,8 @@ public class MyLocation {
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
             ServerSQL.setLocation(myPointOfInterest,phone);
+
+            ServerSQL.uploadResults(millis,phone);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -237,6 +247,8 @@ public class MyLocation {
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
             ServerSQL.setLocation(myPointOfInterest,phone);
+
+            ServerSQL.uploadResults(millis,phone);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -271,6 +283,8 @@ public class MyLocation {
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
             ServerSQL.setLocation(myPointOfInterest,phone);
+
+            ServerSQL.uploadResults(millis,phone);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -304,6 +318,8 @@ public class MyLocation {
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
             ServerSQL.setLocation(myPointOfInterest,phone);
+
+            ServerSQL.uploadResults(millis,phone);
         } catch (Exception e) {
             e.printStackTrace();
         }

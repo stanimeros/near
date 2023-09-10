@@ -375,6 +375,8 @@ public class MyLocation {
         try {
             long startTime = System.currentTimeMillis();
             System.out.println("Generating new location using Test Method Search!");
+
+
             ArrayList<GeoPoint> points = HttpHelper.getPointsFromOSM(target,MainActivity.starting_km); //ERROR IF NOT FOUND NOTHING
             SQLiteSpatialiteDirect sqLiteSpatialiteDirect = new SQLiteSpatialiteDirect(context);
             for (int i=0;i<points.size();i++){

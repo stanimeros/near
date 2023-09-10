@@ -134,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 thread.start();
-
             }else if (Objects.equals(method,"sqlite_default")){
                 thread = new Thread(() -> {
                     try {
@@ -142,6 +141,22 @@ public class MainActivity extends AppCompatActivity {
                         SQLiteDefault sqLiteDefault = new SQLiteDefault(getApplicationContext());
                         sqLiteDefault.getCount();
 
+                        long endTime = System.currentTimeMillis();
+                        long millis = endTime - startTime;
+                        System.out.println("========= DB TOOK =========");
+                        System.out.println(millis);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                });
+                thread.start();
+            }else if (Objects.equals(method,"directSpatialite")){
+                thread = new Thread(() -> {
+                    try {
+                        long startTime = System.currentTimeMillis();
+                        SQLiteSpatialiteDirect sqLiteSpatialiteDirect = new SQLiteSpatialiteDirect(getApplicationContext());
+                        sqLiteSpatialiteDirect.getCount();
+                        sqLiteSpatialiteDirect.Initialize(getApplicationContext());
                         long endTime = System.currentTimeMillis();
                         long millis = endTime - startTime;
                         System.out.println("========= DB TOOK =========");

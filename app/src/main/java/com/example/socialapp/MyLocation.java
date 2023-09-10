@@ -41,8 +41,9 @@ public class MyLocation {
             setMyPointOfInterestRTreeSearch(target,phone,k);
         }else if (Objects.equals(method, "direct")){
             directDownloadQuadTree(target,phone,k);
+        }else if (Objects.equals(method, "directSpatialite")){
+            directDownloadSpatialite(target,phone,k,context);
         }
-
     }
     private void printMyList(ArrayList<GeoPoint> list,GeoPoint target){
         for (int i=0;i<list.size();i++){
@@ -348,6 +349,46 @@ public class MyLocation {
 
             System.out.println("Finding K nearest to the nearest point of interest..");
             ArrayList<GeoPoint> kNearestList = tree.findKNearestNeighbors(nearestPoint,k,distance/1000);
+            printMyList(kNearestList,nearestPoint);
+
+            System.out.println("Selecting one of K points randomly..");
+            Random rand = new Random();
+            int c = rand.nextInt(kNearestList.size());
+
+            System.out.println("Point updated successfully!");
+
+            long endTime = System.currentTimeMillis();
+            long millis = endTime - startTime;
+            System.out.println("========= IT TOOK =========");
+            System.out.println(millis);
+
+            myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
+            ServerSQL.setLocation(myPointOfInterest,phone);
+
+            ServerSQL.uploadResults(millis,phone);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void directDownloadSpatialite(GeoPoint target, String phone, int k, Context context){
+        try {
+            long startTime = System.currentTimeMillis();
+            System.out.println("Generating new location using Test Method Search!");
+            ArrayList<GeoPoint> points = HttpHelper.getPointsFromOSM(target,MainActivity.starting_km); //ERROR IF NOT FOUND NOTHING
+            SQLiteSpatialiteDirect sqLiteSpatialiteDirect = new SQLiteSpatialiteDirect(context);
+            for (int i=0;i<points.size();i++){
+                sqLiteSpatialiteDirect.addGeoPoint(points.get(i),context);
+            }
+
+            System.out.println("Finding nearest point of interest..");
+            GeoPoint nearestPoint = sqLiteSpatialiteDirect.getKNearestList(1,target, MainActivity.starting_km,context).get(0);
+            double distance = nearestPoint.distanceTo(target);
+            System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
+            distance+=10; //ADDING 10 METERS TO AVOID ZERO
+
+            System.out.println("Finding K nearest to the nearest point of interest..");
+            ArrayList<GeoPoint> kNearestList = sqLiteSpatialiteDirect.getKNearestList(k,nearestPoint,distance/1000,context);
             printMyList(kNearestList,nearestPoint);
 
             System.out.println("Selecting one of K points randomly..");

@@ -375,12 +375,13 @@ public class MyLocation {
         try {
             long startTime = System.currentTimeMillis();
             System.out.println("Generating new location using Test Method Search!");
-
-
-            ArrayList<GeoPoint> points = HttpHelper.getPointsFromOSM(target,MainActivity.starting_km); //ERROR IF NOT FOUND NOTHING
             SQLiteSpatialiteDirect sqLiteSpatialiteDirect = new SQLiteSpatialiteDirect(context);
-            for (int i=0;i<points.size();i++){
-                sqLiteSpatialiteDirect.addGeoPoint(points.get(i),context);
+
+            if (!sqLiteSpatialiteDirect.isNearPreviousPoint(target,context)){
+                ArrayList<GeoPoint> points = HttpHelper.getPointsFromOSM(target,MainActivity.starting_km); //ERROR IF NOT FOUND NOTHING //500 Meters
+                for (int i=0;i<points.size();i++){
+                    sqLiteSpatialiteDirect.addGeoPoint(points.get(i),context);
+                }
             }
 
             System.out.println("Finding nearest point of interest..");
@@ -407,6 +408,7 @@ public class MyLocation {
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
             ServerSQL.setLocation(myPointOfInterest,phone);
 
+            sqLiteSpatialiteDirect.addPreviousPoint(myPointOfInterest,context);
             ServerSQL.uploadResults(millis,phone);
         } catch (Exception e) {
             e.printStackTrace();

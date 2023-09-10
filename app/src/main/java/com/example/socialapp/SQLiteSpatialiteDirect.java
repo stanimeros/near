@@ -1,13 +1,10 @@
 package com.example.socialapp;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import jsqlite.Database;
@@ -26,10 +23,19 @@ public class SQLiteSpatialiteDirect extends SQLiteOpenHelper {
         try {
             System.out.println("CREATING DB..");
 
-            String query = "CREATE TABLE " + MainActivity.table + " ("
-                    + "id INTEGER PRIMARY KEY)";
-
+            String query = "CREATE TABLE " + MainActivity.table + " (" +
+                    "id INTEGER PRIMARY KEY)";
             db.execSQL(query);
+
+            query = "CREATE TABLE " + MainActivity.table + "_center_points (" +
+                    "id INTEGER PRIMARY KEY," +
+                    "lon REAL," +
+                    "lat REAL)";
+            db.execSQL(query);
+
+            query = "CREATE UNIQUE INDEX unique_location ON "+MainActivity.table+"_center_points (lon,lat)";
+            db.execSQL(query);
+
             System.out.println("TABLE CREATED!");
             System.out.println("SQLITE DB CREATED SUCCESSFULLY!");
         }catch (Exception e){
@@ -78,6 +84,8 @@ public class SQLiteSpatialiteDirect extends SQLiteOpenHelper {
             while( stmt.step() ) {
                 System.out.println(stmt.column_string(0));
             }
+            stmt.close();
+            db.close();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -100,9 +108,68 @@ public class SQLiteSpatialiteDirect extends SQLiteOpenHelper {
             while( stmt.step() ) {
                 System.out.println(stmt.column_string(0));
             }
+            stmt.close();
+            db.close();
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public void addPreviousPoint(GeoPoint geoPoint, Context context){
+        try {
+            File dbFile = context.getDatabasePath(MainActivity.database_SQLite);
+
+            Database db = new jsqlite.Database();
+            db.open(dbFile.getAbsolutePath(), jsqlite.Constants.SQLITE_OPEN_READWRITE
+                    | jsqlite.Constants.SQLITE_OPEN_CREATE);
+
+            String query;
+            Stmt stmt;
+
+            query = "INSERT OR IGNORE INTO " + MainActivity.table + "_center_points (lon,lat) VALUES " +
+                    "("+geoPoint.getLon()+", "+geoPoint.getLat()+");";
+            System.out.println(query);
+            stmt = db.prepare(query);
+            while( stmt.step() ) {
+                System.out.println(stmt.column_string(0));
+            }
+            stmt.close();
+            db.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public boolean isNearPreviousPoint(GeoPoint geoPoint, Context context){
+        try {
+            File dbFile = context.getDatabasePath(MainActivity.database_SQLite);
+
+            Database db = new jsqlite.Database();
+            db.open(dbFile.getAbsolutePath(), jsqlite.Constants.SQLITE_OPEN_READWRITE
+                    | jsqlite.Constants.SQLITE_OPEN_CREATE);
+
+            String query;
+            Stmt stmt;
+
+            query = "SELECT COUNT(*) FROM " + MainActivity.table + "_center_points " +
+                    "WHERE ST_Distance(MakePoint("+geoPoint.getLon()+","+geoPoint.getLat()+", 4326),MakePoint(lon,lat,4326),1)<" + MainActivity.starting_km*1000/2; //500 Meters / 2
+            stmt = db.prepare(query);
+            System.out.println(query);
+            int count = 0;
+            while( stmt.step() ) {
+                count = Integer.parseInt(stmt.column_string(0));
+            }
+            stmt.close();
+            db.close();
+
+            System.out.println(count);
+            if (count> 0){
+                return true;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public ArrayList<GeoPoint> getKNearestList(int k, GeoPoint target, double distanceInKm, Context context) {

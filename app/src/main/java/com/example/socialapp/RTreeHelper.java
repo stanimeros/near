@@ -85,6 +85,35 @@ public class RTreeHelper{
         return new ArrayList<>(results.subList(0, k));
     }
 
+    public static ArrayList<GeoPoint> getPointsFromRange(GeoPoint geoPoint, int k, double distanceInKm,RTree<String,Point> rtree) {
+        List<Entry<String, Point>> list = null;
+        final double sqrt2 = Math.sqrt(2);
+        while (list==null || list.size()<k){
+            System.out.println("A query is running now .." + String.format("%.2f", distanceInKm*1000) + "m");
+
+            list = RTreeHelper.search(rtree, Geometries.pointGeographic(geoPoint.getLon(), geoPoint.getLat()), distanceInKm)
+                    .toList().toBlocking().single();
+
+            if (list.size()<k){
+                System.out.println("Results are "+list.size()+" < k: "+k);
+                distanceInKm = distanceInKm*sqrt2;
+            }
+        }
+
+        ArrayList<GeoPoint> results = new ArrayList<>();
+        for (int i=0;i<list.size();i++){
+            GeoPoint point = new GeoPoint((float) list.get(i).geometry().x(), (float) list.get(i).geometry().y());
+            results.add(point);
+        }
+
+        Collections.sort(Objects.requireNonNull(results), (o1, o2) -> {
+            Float f1 = o1.distanceTo(geoPoint);
+            Float f2 = o2.distanceTo(geoPoint);
+            return f1.compareTo(f2);
+        });
+        return new ArrayList<>(results.subList(0, k));
+    }
+
     private static <T> Observable<Entry<T, Point>> search(RTree<T, Point> tree, Point lonLat, final double distanceKm) {
         // First we need to calculate an enclosing lat long rectangle for this
         // distance then we refine on the exact distance

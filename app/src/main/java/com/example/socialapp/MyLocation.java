@@ -1,6 +1,11 @@
 package com.example.socialapp;
 
 import android.content.Context;
+
+import com.github.davidmoten.rtree.RTree;
+import com.github.davidmoten.rtree.geometry.Geometries;
+import com.github.davidmoten.rtree.geometry.Point;
+
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
@@ -34,6 +39,8 @@ public class MyLocation {
             setMyPointOfInterestQuadTreeSearch(target,phone,k,context);
         }else if (Objects.equals(method, "rtree")){
             setMyPointOfInterestRTreeSearch(target,phone,k);
+        }else if (Objects.equals(method, "direct")){
+            directDownloadQuadTree(target,phone,k);
         }
 
     }
@@ -303,6 +310,44 @@ public class MyLocation {
 
             System.out.println("Finding K nearest to the nearest point of interest..");
             ArrayList<GeoPoint> kNearestList = RTreeHelper.getPointsFromRange(nearestPoint,k,distance/1000);
+            printMyList(kNearestList,nearestPoint);
+
+            System.out.println("Selecting one of K points randomly..");
+            Random rand = new Random();
+            int c = rand.nextInt(kNearestList.size());
+
+            System.out.println("Point updated successfully!");
+
+            long endTime = System.currentTimeMillis();
+            long millis = endTime - startTime;
+            System.out.println("========= IT TOOK =========");
+            System.out.println(millis);
+
+            myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
+            ServerSQL.setLocation(myPointOfInterest,phone);
+
+            ServerSQL.uploadResults(millis,phone);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void directDownloadQuadTree(GeoPoint target, String phone, int k){
+        try {
+            long startTime = System.currentTimeMillis();
+            System.out.println("Generating new location using Test Method Search!");
+            ArrayList<GeoPoint> points = HttpHelper.getPointsFromOSM(target,MainActivity.starting_km); //ERROR IF NOT FOUND NOTHING
+            QuadTree tree = new QuadTree(points,MainActivity.KDTreeLeafMaxPoints);
+
+            System.out.println("Finding nearest point of interest..");
+            GeoPoint nearestPoint = tree.findKNearestNeighbors(target,1, MainActivity.starting_km).get(0);
+            double distance = nearestPoint.distanceTo(target);
+            System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
+            distance+=10; //ADDING 10 METERS TO AVOID ZERO
+
+            System.out.println("Finding K nearest to the nearest point of interest..");
+            ArrayList<GeoPoint> kNearestList = tree.findKNearestNeighbors(nearestPoint,k,distance/1000);
             printMyList(kNearestList,nearestPoint);
 
             System.out.println("Selecting one of K points randomly..");

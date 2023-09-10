@@ -156,7 +156,12 @@ public class MainActivity extends AppCompatActivity {
                         long startTime = System.currentTimeMillis();
                         SQLiteSpatialiteDirect sqLiteSpatialiteDirect = new SQLiteSpatialiteDirect(getApplicationContext());
                         sqLiteSpatialiteDirect.getCount();
-                        sqLiteSpatialiteDirect.Initialize(getApplicationContext());
+
+                        ArrayList<String> names = sqLiteSpatialiteDirect.getColumnsNames();
+                        if (!names.contains("loc")) {
+                            sqLiteSpatialiteDirect.Initialize(getApplicationContext());
+                        }
+
                         long endTime = System.currentTimeMillis();
                         long millis = endTime - startTime;
                         System.out.println("========= DB TOOK =========");

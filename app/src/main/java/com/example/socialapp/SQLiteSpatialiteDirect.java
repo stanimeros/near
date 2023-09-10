@@ -65,6 +65,12 @@ public class SQLiteSpatialiteDirect extends SQLiteOpenHelper {
                 System.out.println(stmt.column_string(0));
             }
 
+            query = "CREATE UNIQUE INDEX unique_loc ON "+MainActivity.table+"(loc);";
+            System.out.println(query);
+            stmt = db.prepare(query);
+            while( stmt.step() ) {
+                System.out.println(stmt.column_string(0));
+            }
 
             query = "SELECT CreateSpatialIndex('"+MainActivity.table+"', 'loc');";
             System.out.println(query);
@@ -88,9 +94,8 @@ public class SQLiteSpatialiteDirect extends SQLiteOpenHelper {
             String query;
             Stmt stmt;
 
-            query = "INSERT INTO " + MainActivity.table + " (loc) VALUES " +
+            query = "INSERT OR IGNORE INTO " + MainActivity.table + " (loc) VALUES " +
                     "(MakePoint("+geoPoint.getLon()+", "+geoPoint.getLat()+", 4326));";
-            System.out.println(query);
             stmt = db.prepare(query);
             while( stmt.step() ) {
                 System.out.println(stmt.column_string(0));

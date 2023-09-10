@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         method = prefs.getString("method",method);
         k = prefs.getInt("k-anonymity",k);
         starting_km = Double.parseDouble(prefs.getString("starting_km", String.valueOf(starting_km)));
-        kmFile = prefs.getString("kmFile","1km");
+        kmFile = prefs.getString("kmFile",kmFile);
         treeMaxPoints = prefs.getInt("treeMaxPoints",treeMaxPoints);
         KDTreeLeafMaxPoints = prefs.getInt("KDTreeLeafMaxPoints",KDTreeLeafMaxPoints);
         QuadTreeLeafMaxPoints = prefs.getInt("QuadTreeLeafMaxPoints",QuadTreeLeafMaxPoints);

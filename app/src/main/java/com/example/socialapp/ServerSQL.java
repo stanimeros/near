@@ -289,8 +289,8 @@ public class ServerSQL {
         String updateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
         ServerSQLConnection serverSQLConnection = new ServerSQLConnection();
-        serverSQLConnection.Update("INSERT INTO results(method, millis, phone,api,version,device,manufacturer,time) " +
-                "VALUES ('"+MainActivity.method+"','"+millis+"','"+phone+"','"+Build.VERSION.SDK_INT+"','"+Build.VERSION.RELEASE+"','"+Build.MODEL+"','"+Build.MANUFACTURER+"','"+updateTime+"')");
+        serverSQLConnection.Update("INSERT INTO results(method,km,millis,phone,api,version,device,manufacturer,time) " +
+                "VALUES ('"+MainActivity.method+"','"+MainActivity.kmFile+"','"+millis+"','"+phone+"','"+Build.VERSION.SDK_INT+"','"+Build.VERSION.RELEASE+"','"+Build.MODEL+"','"+Build.MANUFACTURER+"','"+updateTime+"')");
         ServerSQL.ThreadStart(serverSQLConnection);
         return serverSQLConnection.isExecuted();
     }

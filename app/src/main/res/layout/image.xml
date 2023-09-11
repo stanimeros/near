@@ -17,7 +17,6 @@
         android:id="@+id/imageViewImage"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:contentDescription="@string/todo"
         app:layout_constraintStart_toStartOf="parent"

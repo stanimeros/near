@@ -171,6 +171,7 @@ public class EditProfile extends AppCompatActivity {
                 selectedView = view;
             });
 
+            imageViewChoice.setPadding(0 ,20,20,0);
             flowConstraintLayout.addView(imageViewChoice);
             flowLayout.addView(imageViewChoice);
         }catch (Exception e){

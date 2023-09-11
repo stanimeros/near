@@ -18,7 +18,7 @@
         android:fontFamily="sans-serif-light"
         android:text="@string/add_a_friend"
         android:textColor="@color/text"
-        android:textSize="24sp"
+        android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -31,6 +31,7 @@
         android:background="@color/base2"
         android:fontFamily="sans-serif-light"
         android:text="@string/add"
+        android:textSize="18sp"
         android:textColor="@color/textButtons"
         app:layout_constraintBottom_toBottomOf="@+id/editTextUsernameToAdd"
         app:layout_constraintStart_toEndOf="@+id/editTextUsernameToAdd"
@@ -58,6 +59,7 @@
         android:autofillHints=""
         android:ems="10"
         android:fontFamily="sans-serif-light"
+        android:textSize="20sp"
         android:hint="@string/username"
         android:inputType="textPersonName"
         android:minHeight="48dp"
@@ -76,7 +78,7 @@
         android:fontFamily="sans-serif-light"
         android:text="@string/friend_requests"
         android:textColor="@color/text"
-        android:textSize="16sp"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextUsernameToAdd" />
 
@@ -126,7 +128,8 @@
         android:gravity="center"
         android:text="@string/when_people_ask_to_be_friends_you_ll_see_their_n_requests_here"
         android:textColor="@color/text"
-        android:textSize="12sp"
+        android:textSize="18sp"
+        android:padding="5sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/swipeToRefreshRequests" />

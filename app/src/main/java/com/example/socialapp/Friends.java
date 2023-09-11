@@ -99,7 +99,7 @@ public class Friends extends AppCompatActivity {
             image.setImageResource(Icons.getIcons().get(friendUser.getImage()-1));
 
             TextView username = requestView.findViewById(R.id.textViewRequestUsername);
-            username.setText(friendUser.getName()+" sent you a friend request");
+            username.setText("Friend request by " + friendUser.getName());
 
             ImageView accept = requestView.findViewById(R.id.imageViewAccept);
             ImageView reject = requestView.findViewById(R.id.imageViewReject);

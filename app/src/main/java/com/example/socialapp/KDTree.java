@@ -24,18 +24,18 @@ public class KDTree implements Serializable {
         return searchGeoPoint(root, target);
     }
 
-    public ArrayList<GeoPoint> findKNearestNeighbors(GeoPoint target,int k,double distanceInKm) {
+    public ArrayList<GeoPoint> getKNearestList(GeoPoint target,int k,double distanceInKm) {
         try {
-            double rangeInKm = distanceInKm;
+            double radiusInKm = distanceInKm;
             final double sqrt2 = Math.sqrt(2);
             ArrayList<GeoPoint> kNearestNeighborsList = new ArrayList<>();
             while (kNearestNeighborsList.size()<k){
-                kNearestNeighborsList = findNearestNeighborsInRange(target,rangeInKm);
+                kNearestNeighborsList = getNearestNeighbors(target,radiusInKm);
                 if (kNearestNeighborsList.size()<k){
-                    rangeInKm = rangeInKm*sqrt2;
+                    radiusInKm = radiusInKm*sqrt2;
                 }
             }
-            System.out.println("K is "+k+",found "+kNearestNeighborsList.size()+" point(s) in range "+(int) (rangeInKm*1000)+"m");
+            System.out.println("K is "+k+",found "+kNearestNeighborsList.size()+" point(s) in radius "+(int) (radiusInKm*1000)+"m");
             return new ArrayList<>(kNearestNeighborsList.subList(0, k));
         }catch (Exception e){
             System.out.println("Error in findKNearestNeighbors!");
@@ -44,9 +44,9 @@ public class KDTree implements Serializable {
         }
     }
 
-    public ArrayList<GeoPoint> findNearestNeighborsInRange(GeoPoint target,double rangeInKm) {
+    public ArrayList<GeoPoint> getNearestNeighbors(GeoPoint target,double radiusInKm) {
         try {
-            double meters = rangeInKm / 111.32;
+            double meters = radiusInKm / 111.32;
             double rectMinLat = (target.getLat()-meters);
             double rectMaxLat = (target.getLat()+meters);
 
@@ -64,31 +64,35 @@ public class KDTree implements Serializable {
 
             //Starting a thread for every node!
             ArrayList<GeoPoint> kNearestNeighborsList = new ArrayList<>();
-            ArrayList<KDNode> nodesInDepth = getNodesInSpecificDepth(1);
-            assert nodesInDepth != null;
-            Thread[] threads = new Thread[nodesInDepth.size()];
+            int countNodes = countNodes(root);
+            if (countNodes>=127){
+                ArrayList<KDNode> nodesInDepth = getNodesInSpecificDepth(1);
+                assert nodesInDepth != null;
+                Thread[] threads = new Thread[nodesInDepth.size()];
 
-            for (int i=0;i<nodesInDepth.size();i++){
-                int finalI = i;
-                threads[i] = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Thread.currentThread().setName("Thread-NodeSearch"+ finalI);
-                        ArrayList<GeoPoint> tempList = getPointsInsideRectangle(rectMinLat,rectMaxLat,rectMinLon,rectMaxLon, nodesInDepth.get(finalI));
-                        //System.out.println(Thread.currentThread().getName()+ " found " + tempList.size()+ " points!");
-                        assert tempList != null;
-                        kNearestNeighborsList.addAll(tempList);
-                    }
-                });
-                threads[i].start();
+                for (int i=0;i<nodesInDepth.size();i++){
+                    int finalI = i;
+                    ArrayList<GeoPoint> finalKNearestNeighborsList = kNearestNeighborsList;
+                    threads[i] = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Thread.currentThread().setName("Thread-NodeSearch"+ finalI);
+                            ArrayList<GeoPoint> tempList = getPointsInsideRectangle(rectMinLat,rectMaxLat,rectMinLon,rectMaxLon, nodesInDepth.get(finalI));
+                            //System.out.println(Thread.currentThread().getName()+ " found " + tempList.size()+ " points!");
+                            assert tempList != null;
+                            finalKNearestNeighborsList.addAll(tempList);
+                        }
+                    });
+                    threads[i].start();
+                }
+
+                for (Thread thread : threads) {
+                    thread.join();
+                }
+                //All threads finished!
+            }else{
+                kNearestNeighborsList = getPointsInsideRectangle(rectMinLat,rectMaxLat,rectMinLon,rectMaxLon,root);
             }
-
-            for (Thread thread : threads) {
-                thread.join();
-            }
-            //All threads finished!
-
-            //ArrayList<GeoPoint> kNearestNeighborsList = getPointsInsideRectangle(rectMinLat,rectMaxLat,rectMinLon,rectMaxLon,root);
 
             Collections.sort(Objects.requireNonNull(kNearestNeighborsList), (o1, o2) -> {
                 Float f1 = o1.distanceTo(target);
@@ -96,10 +100,10 @@ public class KDTree implements Serializable {
                 return f1.compareTo(f2);
             });
 
-            //return getPointsInsideCircle(kNearestNeighborsList,target,rangeInKm);
+            //return getPointsInsideCircle(kNearestNeighborsList,target,radiusInKm);
             return kNearestNeighborsList;
         }catch (Exception e){
-            System.out.println("Error in findNearestNeighborsInRange!");
+            System.out.println("Error in findNearestNeighborsInRadius!");
             e.printStackTrace();
             return null;
         }

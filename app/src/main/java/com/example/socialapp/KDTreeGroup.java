@@ -59,32 +59,32 @@ public class KDTreeGroup {
         }
     }
 
-    public static ArrayList<GeoPoint> findKNearestNeighbors(GeoPoint target, int k, double distanceInKm){
+    public static ArrayList<GeoPoint> getKNearestList(GeoPoint target, int k, double distanceInKm){
         try {
             if (mainTree==null || keyTree!=getKeyTree(target)){
                 mainTree = Objects.requireNonNull(getMainTree(target));
                 keyTree = getKeyTree(target);
             }
-            ArrayList<GeoPoint> neighbors = mainTree.findKNearestNeighbors(target,k,distanceInKm);
+            ArrayList<GeoPoint> neighbors = mainTree.getKNearestList(target,k,distanceInKm);
 
             double radius = neighbors.get(neighbors.size()-1).distanceTo(target);
-            System.out.println("Searched in main-tree and found "+neighbors.size()+" point(s) in range "+(int) (radius)+"m");
+            System.out.println("Searched in main-tree and found "+neighbors.size()+" point(s) in Radius "+(int) (radius)+"m");
 
-            ArrayList<KDTree> treesInRange= Objects.requireNonNull(getTreesInRange(target,radius));
-            if (treesInRange.size()>1){
-                System.out.println("Range includes "+treesInRange.size()+" trees!");
+            ArrayList<KDTree> treesInRadius= Objects.requireNonNull(getTreesInRadius(target,radius));
+            if (treesInRadius.size()>1){
+                System.out.println("Radius includes "+treesInRadius.size()+" trees!");
                 neighbors.removeAll(neighbors);
 
                 //Starting a thread for every tree!
-                Thread[] threads = new Thread[treesInRange.size()];
-                for (int i=0;i<treesInRange.size();i++){
+                Thread[] threads = new Thread[treesInRadius.size()];
+                for (int i=0;i<treesInRadius.size();i++){
                     double finalRadius = radius;
                     int finalI = i;
                     threads[i] = new Thread(new Runnable() {
                         @Override
                         public void run() {
                             Thread.currentThread().setName("Thread-TreeSearch"+finalI);
-                            ArrayList<GeoPoint> tempList = treesInRange.get(finalI).findNearestNeighborsInRange(target,(finalRadius /1000));
+                            ArrayList<GeoPoint> tempList = treesInRadius.get(finalI).getNearestNeighbors(target,(finalRadius /1000));
                             System.out.println(Thread.currentThread().getName()+ " found " + tempList.size()+ " points!");
                             neighbors.addAll(tempList);
                         }
@@ -98,8 +98,8 @@ public class KDTreeGroup {
                 //All threads finished!
 
                 //Without Threads
-                //for (int i=0;i<treesInRange.size();i++){
-                //    neighbors.addAll(treesInRange.get(i).findNearestNeighborsInRange(target,(radius/1000)));
+                //for (int i=0;i<treesInRadius.size();i++){
+                //    neighbors.addAll(treesInRadius.get(i).findNearestNeighborsInRadius(target,(radius/1000)));
                 //}
 
                 Collections.sort(Objects.requireNonNull(neighbors), (o1, o2) -> {
@@ -112,11 +112,11 @@ public class KDTreeGroup {
                     return neighbors;
                 }else{
                     radius = neighbors.get(k-1).distanceTo(target);
-                    System.out.println("Total points found are "+neighbors.size()+" and "+k+" point(s) are in range "+(int) (radius)+"m");
+                    System.out.println("Total points found are "+neighbors.size()+" and "+k+" point(s) are in Radius "+(int) (radius)+"m");
                     return new ArrayList<>(neighbors.subList(0, k));
                 }
             }else{
-                System.out.println("No other trees are included in that range!");
+                System.out.println("No other trees are included in that Radius!");
                 return neighbors;
             }
         }catch (Exception e){
@@ -157,23 +157,23 @@ public class KDTreeGroup {
         }
     }
 
-    private static ArrayList<KDTree> getTreesInRange(GeoPoint point, double range){
+    private static ArrayList<KDTree> getTreesInRadius(GeoPoint point, double Radius){
         try {
             int last = 0;
-            ArrayList<KDTree> treesInRange = new ArrayList<>();
+            ArrayList<KDTree> treesInRadius = new ArrayList<>();
 
             for (int i=0;i<treeEdges.size();i++){
-                if (new GeoPoint(treeEdges.get(i).floatValue(),point.getLat()).distanceTo(point)<range){
-                    treesInRange.add(getTree(i+1));
+                if (new GeoPoint(treeEdges.get(i).floatValue(),point.getLat()).distanceTo(point)<Radius){
+                    treesInRadius.add(getTree(i+1));
                     last=i;
                 }
             }
             if (last!=0 && last<treeEdges.size()-1){
-                treesInRange.add(getTree(last+2));
+                treesInRadius.add(getTree(last+2));
             }
-            return treesInRange;
+            return treesInRadius;
         }catch (Exception e){
-            System.out.println("Error in getTreesInRange!");
+            System.out.println("Error in getTreesInRadius!");
             e.printStackTrace();
             return null;
         }

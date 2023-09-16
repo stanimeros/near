@@ -10,10 +10,10 @@ import java.util.Arrays;
 import jsqlite.Database;
 import jsqlite.Stmt;
 
-public class SQLiteSpatialiteDirect extends SQLiteOpenHelper {
+public class SQLiteSpatialiteDirectFromOSM extends SQLiteOpenHelper {
     Context context;
 
-    public SQLiteSpatialiteDirect(Context context) {
+    public SQLiteSpatialiteDirectFromOSM(Context context) {
         super(context, MainActivity.database_SQLite, null, 1);
         this.context = context;
     }

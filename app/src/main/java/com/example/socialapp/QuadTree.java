@@ -11,18 +11,18 @@ public class QuadTree implements Serializable{
         root = new QuadNode(0,bucketMax);
         root.insertList(geoList);
     }
-    public ArrayList<GeoPoint> findKNearestNeighbors(GeoPoint target,int k,double distanceInKm) {
+    public ArrayList<GeoPoint> getKNearestList(GeoPoint target,int k,double distanceInKm) {
         try {
-            double rangeInKm = distanceInKm;
+            double radiusInKm = distanceInKm;
             final double sqrt2 = Math.sqrt(2);
             ArrayList<GeoPoint> kNearestNeighborsList = new ArrayList<>();
             while (kNearestNeighborsList.size()<k){
-                kNearestNeighborsList = findNearestNeighborsInRange(target,rangeInKm);
+                kNearestNeighborsList = getNearestNeighbors(target,radiusInKm);
                 if (kNearestNeighborsList.size()<k){
-                    rangeInKm = rangeInKm*sqrt2;
+                    radiusInKm = radiusInKm*sqrt2;
                 }
             }
-            System.out.println("K is "+k+",found "+kNearestNeighborsList.size()+" point(s) in range "+(int) (rangeInKm*1000)+"m");
+            System.out.println("K is "+k+",found "+kNearestNeighborsList.size()+" point(s) in radius "+(int) (radiusInKm*1000)+"m");
             return new ArrayList<>(kNearestNeighborsList.subList(0, k));
         }catch (Exception e){
             System.out.println("Error in findKNearestNeighbors!");
@@ -31,9 +31,9 @@ public class QuadTree implements Serializable{
         }
     }
 
-    public ArrayList<GeoPoint> findNearestNeighborsInRange(GeoPoint target,double rangeInKm) {
+    public ArrayList<GeoPoint> getNearestNeighbors(GeoPoint target,double radiusInKm) {
         try {
-            double meters = rangeInKm / 111.32;
+            double meters = radiusInKm / 111.32;
             double rectMinLat = (target.getLat()-meters);
             double rectMaxLat = (target.getLat()+meters);
 
@@ -51,30 +51,34 @@ public class QuadTree implements Serializable{
 
             //Starting a thread for every node!
             ArrayList<GeoPoint> kNearestNeighborsList = new ArrayList<>();
-            ArrayList<QuadNode> nodesInDepth = getNodesInSpecificDepth(1);
-            assert nodesInDepth != null;
-            Thread[] threads = new Thread[nodesInDepth.size()];
+            int countNodes = countNodes(root);
+            if (countNodes>=85){
+                ArrayList<QuadNode> nodesInDepth = getNodesInSpecificDepth(1);
+                assert nodesInDepth != null;
+                Thread[] threads = new Thread[nodesInDepth.size()];
 
-            for (int i=0;i<nodesInDepth.size();i++){
-                int finalI = i;
-                threads[i] = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Thread.currentThread().setName("Thread-NodeSearch"+ finalI);
-                        ArrayList<GeoPoint> tempList = getPointsInsideRectangle(rectMinLat,rectMaxLat,rectMinLon,rectMaxLon, nodesInDepth.get(finalI));
-                        //System.out.println(Thread.currentThread().getName()+ " found " + tempList.size()+ " points!");
-                        assert tempList != null;
-                        kNearestNeighborsList.addAll(tempList);
-                    }
-                });
-                threads[i].start();
-            }
+                for (int i=0;i<nodesInDepth.size();i++){
+                    int finalI = i;
+                    ArrayList<GeoPoint> finalKNearestNeighborsList = kNearestNeighborsList;
+                    threads[i] = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Thread.currentThread().setName("Thread-NodeSearch"+ finalI);
+                            ArrayList<GeoPoint> tempList = getPointsInsideRectangle(rectMinLat,rectMaxLat,rectMinLon,rectMaxLon, nodesInDepth.get(finalI));
+                            //System.out.println(Thread.currentThread().getName()+ " found " + tempList.size()+ " points!");
+                            assert tempList != null;
+                            finalKNearestNeighborsList.addAll(tempList);
+                        }
+                    });
+                    threads[i].start();
+                }
 
-            for (Thread thread : threads) {
-                thread.join();
+                for (Thread thread : threads) {
+                    thread.join();
+                }
+            }else{
+                kNearestNeighborsList = getPointsInsideRectangle(rectMinLat,rectMaxLat,rectMinLon,rectMaxLon,root);
             }
-            //All threads finished!
-            //ArrayList<GeoPoint> kNearestNeighborsList = getPointsInsideRectangle(rectMinLat,rectMaxLat,rectMinLon,rectMaxLon,root);
 
             Collections.sort(Objects.requireNonNull(kNearestNeighborsList), (o1, o2) -> {
                 Float f1 = o1.distanceTo(target);
@@ -82,10 +86,10 @@ public class QuadTree implements Serializable{
                 return f1.compareTo(f2);
             });
 
-            //return getPointsInsideCircle(kNearestNeighborsList,target,rangeInKm); //CIRCLE SECURITY
+            //return getPointsInsideCircle(kNearestNeighborsList,target,radiusInKm); //CIRCLE SECURITY
             return kNearestNeighborsList;
         }catch (Exception e){
-            System.out.println("Error in findNearestNeighborsInRange!");
+            System.out.println("Error in findNearestNeighborsInradius!");
             e.printStackTrace();
             return null;
         }
@@ -97,11 +101,11 @@ public class QuadTree implements Serializable{
                 ArrayList<GeoPoint> geoList = new ArrayList<>();
 
                 if (node.getMinLon()>rectMaxLon || node.getMaxLon()<rectMinLon){
-                    //System.out.println("Out of range!");
+                    //System.out.println("Out of radius!");
                     return geoList;
                 }
                 if (node.getMinLat()>rectMaxLat || node.getMaxLat()<rectMinLat){
-                    //System.out.println("Out of range!");
+                    //System.out.println("Out of radius!");
                     return geoList;
                 }
 
@@ -122,11 +126,11 @@ public class QuadTree implements Serializable{
                 ArrayList<GeoPoint> geoList = new ArrayList<>();
 
                 if (node.getMinLon()>rectMaxLon || node.getMaxLon()<rectMinLon){
-                    //System.out.println("Out of range!");
+                    //System.out.println("Out of radius!");
                     return geoList;
                 }
                 if (node.getMinLat()>rectMaxLat || node.getMaxLat()<rectMinLat){
-                    //System.out.println("Out of range!");
+                    //System.out.println("Out of radius!");
                     return geoList;
                 }
 
@@ -209,5 +213,11 @@ public class QuadTree implements Serializable{
             e.printStackTrace();
             return null;
         }
+    }
+    private int countNodes(QuadNode node) {
+        if (node == null) {
+            return 0;
+        }
+        return 1 + countNodes(node.SEChild) + countNodes(node.SWChild) + countNodes(node.NEChild) + countNodes(node.NWChild);
     }
 }

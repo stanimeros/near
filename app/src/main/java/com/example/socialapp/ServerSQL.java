@@ -333,7 +333,7 @@ public class ServerSQL {
         return Integer.parseInt(serverSQLConnection.getResult());
     }
 
-    public static ArrayList<GeoPoint> getPointsFromRange(GeoPoint geoPoint,int k,double distanceInKm) {
+    public static ArrayList<GeoPoint> getKNearestList(GeoPoint geoPoint,int k,double distanceInKm) {
         ArrayList<String> strings = new ArrayList<>();
         final double sqrt2 = Math.sqrt(2);
         final int columns = 2;

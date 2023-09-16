@@ -55,8 +55,8 @@ public class MainActivity extends AppCompatActivity {
     public static int QuadTreeLeafMaxPoints = 16; //CAN BE MODIFIED
 
     public static int k = 5; //CAN BE MODIFIED
-    public static String kmFile ="25km"; //1km 5km 25km 100km
-    public static String method = "sqlserver";  //1:linear 2:sqlite_default, sqlite_rtree, sqlite_spatialite 3:sqlserver 4:kd 5:quad 6:rtree 7:direct
+    public static String kmFile ="5km"; //1km 5km 25km 100km
+    public static String method = "sqlite_spatialite";  //1:linear 2:sqlite_default, sqlite_rtree, sqlite_spatialite 3:sqlserver 4:kd 5:quad 6:rtree 7:directSpatialite 8:directQuadTree
     public static double starting_km = 0.05; //CAN BE MODIFIED
 
     //FILE CONFIGURATION -- CHANGE ONLY kmFile
@@ -154,12 +154,12 @@ public class MainActivity extends AppCompatActivity {
                 thread = new Thread(() -> {
                     try {
                         long startTime = System.currentTimeMillis();
-                        SQLiteSpatialiteDirect sqLiteSpatialiteDirect = new SQLiteSpatialiteDirect(getApplicationContext());
-                        sqLiteSpatialiteDirect.getCount();
+                        SQLiteSpatialiteDirectFromOSM sqLiteSpatialiteDirectFromOSM = new SQLiteSpatialiteDirectFromOSM(getApplicationContext());
+                        sqLiteSpatialiteDirectFromOSM.getCount();
 
-                        ArrayList<String> names = sqLiteSpatialiteDirect.getColumnsNames();
+                        ArrayList<String> names = sqLiteSpatialiteDirectFromOSM.getColumnsNames();
                         if (!names.contains("loc")) {
-                            sqLiteSpatialiteDirect.Initialize(getApplicationContext());
+                            sqLiteSpatialiteDirectFromOSM.Initialize(getApplicationContext());
                         }
 
                         long endTime = System.currentTimeMillis();

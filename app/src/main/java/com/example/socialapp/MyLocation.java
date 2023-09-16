@@ -2,10 +2,6 @@ package com.example.socialapp;
 
 import android.content.Context;
 
-import com.github.davidmoten.rtree.RTree;
-import com.github.davidmoten.rtree.geometry.Geometries;
-import com.github.davidmoten.rtree.geometry.Point;
-
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
@@ -18,7 +14,7 @@ public class MyLocation {
         String method = MainActivity.method;
         int k = MainActivity.k;
 
-        if (target.distanceTo(pamak)>100000){
+        if (target.distanceTo(pamak)>100000 && !method.contains("direct")){
             System.out.println("Phone is too far from pamak!"); //Prevent calculations far away from dataset's center!
             return;
         }
@@ -39,7 +35,7 @@ public class MyLocation {
             setMyPointOfInterestQuadTreeSearch(target,phone,k,context);
         }else if (Objects.equals(method, "rtree")){
             setMyPointOfInterestRTreeSearch(target,phone,k);
-        }else if (Objects.equals(method, "direct")){
+        }else if (Objects.equals(method, "directQuadTree")){
             directDownloadQuadTree(target,phone,k);
         }else if (Objects.equals(method, "directSpatialite")){
             directDownloadSpatialite(target,phone,k,context);
@@ -57,11 +53,11 @@ public class MyLocation {
             System.out.println("Generating new location using Linear Search!");
 
             System.out.println("Finding nearest point of interest..");
-            GeoPoint nearestPoint = Objects.requireNonNull(LinearSearch.kNearestLinearSearch(target, 1, context)).get(0);
+            GeoPoint nearestPoint = Objects.requireNonNull(LinearSearch.getKNearestList(target, 1, context)).get(0);
             System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
 
             System.out.println("Finding K nearest to the nearest point of interest..");
-            ArrayList<GeoPoint> kNearestList = LinearSearch.kNearestLinearSearch(nearestPoint,k,context);
+            ArrayList<GeoPoint> kNearestList = LinearSearch.getKNearestList(nearestPoint,k,context);
             assert kNearestList != null;
             printMyList(kNearestList,nearestPoint);
 
@@ -197,13 +193,13 @@ public class MyLocation {
             System.out.println("Generating new location using SQLServer!");
 
             System.out.println("Finding nearest point of interest..");
-            GeoPoint nearestPoint = HttpHelper.getPointsFromRange(target, 1, MainActivity.starting_km).get(0);
+            GeoPoint nearestPoint = HttpHelper.getKNearestList(target, 1, MainActivity.starting_km).get(0);
             double distance = nearestPoint.distanceTo(target);
             System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
             distance+=10; //ADDING 10 METERS TO AVOID ZERO
 
             System.out.println("Finding K nearest to the nearest point of interest..");
-            ArrayList<GeoPoint> kNearestList = HttpHelper.getPointsFromRange(nearestPoint,k,distance/1000);
+            ArrayList<GeoPoint> kNearestList = HttpHelper.getKNearestList(nearestPoint,k,distance/1000);
             printMyList(kNearestList,nearestPoint);
 
             System.out.println("Selecting one of K points randomly..");
@@ -233,13 +229,13 @@ public class MyLocation {
             System.out.println("Generating new location using KD-Tree Search!");
 
             System.out.println("Finding nearest point of interest..");
-            GeoPoint nearestPoint = KDTreeGroup.findKNearestNeighbors(target,1,MainActivity.starting_km).get(0);
+            GeoPoint nearestPoint = KDTreeGroup.getKNearestList(target,1,MainActivity.starting_km).get(0);
             double distance = nearestPoint.distanceTo(target);
             System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
             distance+=10; //ADDING 10 METERS TO AVOID ZERO
 
             System.out.println("Finding K nearest to the nearest point of interest..");
-            ArrayList<GeoPoint> kNearestList = KDTreeGroup.findKNearestNeighbors(nearestPoint,k,distance/1000);
+            ArrayList<GeoPoint> kNearestList = KDTreeGroup.getKNearestList(nearestPoint,k,distance/1000);
             printMyList(kNearestList,nearestPoint);
 
             System.out.println("Selecting one of K points randomly..");
@@ -269,13 +265,13 @@ public class MyLocation {
             System.out.println("Generating new location using Quad-Tree Search!");
 
             System.out.println("Finding nearest point of interest..");
-            GeoPoint nearestPoint = QuadTreeGroup.findKNearestNeighbors(target,1,MainActivity.starting_km).get(0);
+            GeoPoint nearestPoint = QuadTreeGroup.getKNearestList(target,1,MainActivity.starting_km).get(0);
             double distance = nearestPoint.distanceTo(target);
             System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
             distance+=10; //ADDING 10 METERS TO AVOID ZERO
 
             System.out.println("Finding K nearest to the nearest point of interest..");
-            ArrayList<GeoPoint> kNearestList = QuadTreeGroup.findKNearestNeighbors(nearestPoint,k,distance/1000);
+            ArrayList<GeoPoint> kNearestList = QuadTreeGroup.getKNearestList(nearestPoint,k,distance/1000);
             printMyList(kNearestList,nearestPoint);
 
             System.out.println("Selecting one of K points randomly..");
@@ -342,13 +338,13 @@ public class MyLocation {
             QuadTree tree = new QuadTree(points,MainActivity.KDTreeLeafMaxPoints);
 
             System.out.println("Finding nearest point of interest..");
-            GeoPoint nearestPoint = tree.findKNearestNeighbors(target,1, MainActivity.starting_km).get(0);
+            GeoPoint nearestPoint = tree.getKNearestList(target,1, MainActivity.starting_km).get(0);
             double distance = nearestPoint.distanceTo(target);
             System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
             distance+=10; //ADDING 10 METERS TO AVOID ZERO
 
             System.out.println("Finding K nearest to the nearest point of interest..");
-            ArrayList<GeoPoint> kNearestList = tree.findKNearestNeighbors(nearestPoint,k,distance/1000);
+            ArrayList<GeoPoint> kNearestList = tree.getKNearestList(nearestPoint,k,distance/1000);
             printMyList(kNearestList,nearestPoint);
 
             System.out.println("Selecting one of K points randomly..");
@@ -375,23 +371,23 @@ public class MyLocation {
         try {
             long startTime = System.currentTimeMillis();
             System.out.println("Generating new location using Test Method Search!");
-            SQLiteSpatialiteDirect sqLiteSpatialiteDirect = new SQLiteSpatialiteDirect(context);
+            SQLiteSpatialiteDirectFromOSM sqLiteSpatialiteDirectFromOSM = new SQLiteSpatialiteDirectFromOSM(context);
 
-            if (!sqLiteSpatialiteDirect.isNearPreviousPoint(target,context)){
+            if (!sqLiteSpatialiteDirectFromOSM.isNearPreviousPoint(target,context)){
                 ArrayList<GeoPoint> points = HttpHelper.getPointsFromOSM(target,MainActivity.starting_km); //ERROR IF NOT FOUND NOTHING //500 Meters
                 for (int i=0;i<points.size();i++){
-                    sqLiteSpatialiteDirect.addGeoPoint(points.get(i),context);
+                    sqLiteSpatialiteDirectFromOSM.addGeoPoint(points.get(i),context);
                 }
             }
 
             System.out.println("Finding nearest point of interest..");
-            GeoPoint nearestPoint = sqLiteSpatialiteDirect.getKNearestList(1,target, MainActivity.starting_km,context).get(0);
+            GeoPoint nearestPoint = sqLiteSpatialiteDirectFromOSM.getKNearestList(1,target, MainActivity.starting_km,context).get(0);
             double distance = nearestPoint.distanceTo(target);
             System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
             distance+=10; //ADDING 10 METERS TO AVOID ZERO
 
             System.out.println("Finding K nearest to the nearest point of interest..");
-            ArrayList<GeoPoint> kNearestList = sqLiteSpatialiteDirect.getKNearestList(k,nearestPoint,distance/1000,context);
+            ArrayList<GeoPoint> kNearestList = sqLiteSpatialiteDirectFromOSM.getKNearestList(k,nearestPoint,distance/1000,context);
             printMyList(kNearestList,nearestPoint);
 
             System.out.println("Selecting one of K points randomly..");
@@ -408,7 +404,7 @@ public class MyLocation {
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
             ServerSQL.setLocation(myPointOfInterest,phone);
 
-            sqLiteSpatialiteDirect.addPreviousPoint(myPointOfInterest,context);
+            sqLiteSpatialiteDirectFromOSM.addPreviousPoint(myPointOfInterest,context);
             ServerSQL.uploadResults(millis,phone);
         } catch (Exception e) {
             e.printStackTrace();

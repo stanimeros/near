@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.Objects;
 
 public class LinearSearch {
-    public static ArrayList<GeoPoint> kNearestLinearSearch(GeoPoint target, int k, Context context) {
+    public static ArrayList<GeoPoint> getKNearestList(GeoPoint target, int k, Context context) {
         try {
             String line;
             int sortsCount = 1;

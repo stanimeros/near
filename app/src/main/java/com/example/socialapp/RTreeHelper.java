@@ -44,7 +44,7 @@ public class RTreeHelper{
             }
             file.close();
             System.out.println("RTree created successfully ..");
-            //saveRTree(context); //saving locally
+            saveRTree(context); //saving locally
             long endTime = System.currentTimeMillis();
             long millis = endTime - startTime;
             System.out.println("========= RTREE CREATION TOOK =========");
@@ -74,6 +74,7 @@ public class RTreeHelper{
         ArrayList<GeoPoint> results = new ArrayList<>();
         for (int i=0;i<list.size();i++){
             GeoPoint point = new GeoPoint((float) list.get(i).geometry().x(), (float) list.get(i).geometry().y());
+            //System.out.println(i+1 +")" + point.distanceTo(geoPoint));
             results.add(point);
         }
 

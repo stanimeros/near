@@ -8,7 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class HttpHelper {
-    public static ArrayList<GeoPoint> getPointsFromRange(GeoPoint geoPoint,int k,double distanceInKm) {
+    public static ArrayList<GeoPoint> getKNearestList(GeoPoint geoPoint,int k,double distanceInKm) {
         ArrayList <GeoPoint> kNearestList = new ArrayList<>();
         try {
             String okeanos = "http://snf-38501.ok-kno.grnetcloud.net/service/";

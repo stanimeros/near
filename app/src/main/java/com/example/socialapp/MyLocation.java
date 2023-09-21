@@ -14,8 +14,10 @@ public class MyLocation {
         String method = MainActivity.method;
         int k = MainActivity.k;
 
-        if (target.distanceTo(pamak)>100000 && !method.contains("direct")){
+        if (target.distanceTo(pamak)>MainActivity.kmNum*1000 && !method.contains("direct")){
             System.out.println("Phone is too far from pamak!"); //Prevent calculations far away from dataset's center!
+            MainActivity.method = "directQuadTree";
+            directDownloadQuadTree(target,phone,k);
             return;
         }
 
@@ -333,8 +335,14 @@ public class MyLocation {
     public void directDownloadQuadTree(GeoPoint target, String phone, int k){
         try {
             long startTime = System.currentTimeMillis();
-            System.out.println("Generating new location using Test Method Search!");
-            ArrayList<GeoPoint> points = HttpHelper.getPointsFromOSM(target,MainActivity.starting_km); //ERROR IF NOT FOUND NOTHING
+            System.out.println("Generating new location using OSM Direct Download and Quad Tree!");
+            ArrayList<GeoPoint> points = new ArrayList<>();
+            double sqrt2 = Math.sqrt(2);
+            double tempDistance = MainActivity.starting_km;
+            while (points.size()<k){
+                points = HttpHelper.getPointsFromOSM(target,tempDistance); //ERROR IF NOT FOUND NOTHING\
+                tempDistance *= sqrt2;
+            }
             QuadTree tree = new QuadTree(points,MainActivity.KDTreeLeafMaxPoints);
 
             System.out.println("Finding nearest point of interest..");

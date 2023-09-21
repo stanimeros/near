@@ -55,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
     public static int QuadTreeLeafMaxPoints = 16; //CAN BE MODIFIED
 
     public static int k = 5; //CAN BE MODIFIED
-    public static String kmFile ="5km"; //1km 5km 25km 100km
+    public static int kmNum = 5;
+    public static String kmFile = kmNum + "km"; //1km 5km 25km 100km
     public static String method = "sqlite_spatialite";  //1:linear 2:sqlite_default, sqlite_rtree, sqlite_spatialite 3:sqlserver 4:kd 5:quad 6:rtree 7:directSpatialite 8:directQuadTree
     public static double starting_km = 0.05; //CAN BE MODIFIED
 

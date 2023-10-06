@@ -67,6 +67,10 @@ public class MainActivity extends AppCompatActivity {
     public static String table = "geopoints_" + kmFile; //CHANGE ONLY kmFile
     public static String database_SQLite = "geopoints_" + kmFile; //CHANGE ONLY kmFile
 
+
+    public static int count=0;
+    public static int time=0;
+
     //CLASS VARIABLES
     private String phone;
     private String username;

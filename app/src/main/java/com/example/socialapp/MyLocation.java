@@ -42,6 +42,9 @@ public class MyLocation {
         }else if (Objects.equals(method, "directSpatialite")){
             directDownloadSpatialite(target,phone,k,context);
         }
+
+
+        System.out.println("=== AVG TIME ("+MainActivity.count+") === \n"+ MainActivity.time/MainActivity.count +"\n=== === ===");
     }
     private void printMyList(ArrayList<GeoPoint> list,GeoPoint target){
         for (int i=0;i<list.size();i++){
@@ -78,6 +81,8 @@ public class MyLocation {
             ServerSQL.setLocation(myPointOfInterest,phone);
 
             ServerSQL.uploadResults(millis,phone);
+            MainActivity.time+=millis;
+            MainActivity.count++;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,6 +117,8 @@ public class MyLocation {
             ServerSQL.setLocation(myPointOfInterest,phone);
 
             ServerSQL.uploadResults(millis,phone);
+            MainActivity.time+=millis;
+            MainActivity.count++;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -148,6 +155,8 @@ public class MyLocation {
             ServerSQL.setLocation(myPointOfInterest,phone);
 
             ServerSQL.uploadResults(millis,phone);
+            MainActivity.time+=millis;
+            MainActivity.count++;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -184,6 +193,8 @@ public class MyLocation {
             ServerSQL.setLocation(myPointOfInterest,phone);
 
             ServerSQL.uploadResults(millis,phone);
+            MainActivity.time+=millis;
+            MainActivity.count++;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -219,6 +230,8 @@ public class MyLocation {
             ServerSQL.setLocation(myPointOfInterest,phone);
 
             ServerSQL.uploadResults(millis,phone);
+            MainActivity.time+=millis;
+            MainActivity.count++;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -255,6 +268,8 @@ public class MyLocation {
             ServerSQL.setLocation(myPointOfInterest,phone);
 
             ServerSQL.uploadResults(millis,phone);
+            MainActivity.time+=millis;
+            MainActivity.count++;
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -291,6 +306,8 @@ public class MyLocation {
             ServerSQL.setLocation(myPointOfInterest,phone);
 
             ServerSQL.uploadResults(millis,phone);
+            MainActivity.time+=millis;
+            MainActivity.count++;
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -326,6 +343,8 @@ public class MyLocation {
             ServerSQL.setLocation(myPointOfInterest,phone);
 
             ServerSQL.uploadResults(millis,phone);
+            MainActivity.time+=millis;
+            MainActivity.count++;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -370,6 +389,8 @@ public class MyLocation {
             ServerSQL.setLocation(myPointOfInterest,phone);
 
             ServerSQL.uploadResults(millis,phone);
+            MainActivity.time+=millis;
+            MainActivity.count++;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -414,6 +435,8 @@ public class MyLocation {
 
             sqLiteSpatialiteDirectFromOSM.addPreviousPoint(myPointOfInterest,context);
             ServerSQL.uploadResults(millis,phone);
+            MainActivity.time+=millis;
+            MainActivity.count++;
         } catch (Exception e) {
             e.printStackTrace();
         }

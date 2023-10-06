@@ -365,7 +365,7 @@ public class Feed extends AppCompatActivity {
                 Date now = new Date();
                 long diffInMillies = now.getTime() - Objects.requireNonNull(lastTimeUpdated).getTime();
                 long diffInSeconds = TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-                if (diffInSeconds<2){ //5 SECONDS PROTECTION
+                if (diffInSeconds<5){ //5 SECONDS PROTECTION
                     System.out.println("Aborted:"+key+" updated "+diffInSeconds+" seconds ago!");
                     return false;
                 }

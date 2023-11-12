@@ -34,7 +34,7 @@ public class ServerSQLConnection implements Runnable{
         Connection con;
         try{
             Class.forName(MainActivity.className);
-            con = DriverManager.getConnection("jdbc:"+MainActivity.jdbcName+"://"+MainActivity.serverIp+":"+MainActivity.port+"/"+MainActivity.database,MainActivity.user,MainActivity.password);
+            con = DriverManager.getConnection("jdbc:"+MainActivity.jdbcName+"://"+MainActivity.serverIp+":"+MainActivity.port+"/"+MainActivity.database+"?allowMultiQueries=true",MainActivity.user,MainActivity.password);
             Statement statement = con.createStatement();
             System.out.println(sql);
             if (!select){ // INSERT OR UPDATE

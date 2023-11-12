@@ -30,11 +30,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String PostgreSQLUser = "postgres";
     private static final String PostgreSQLIP = "10.0.2.2";
     private static final String PostgreSQLPassword = "admin";
-    //MY SERVER
-    private static final String MyServerIP = "89.117.169.103";
-    private static final String MyServerDatabase = "u223212146_social";
-    private static final String MyServerUser = "u223212146_stanimeros2"; //ONLY SELECT INSERT UPDATE DELETE
-    private static final String MyServerPassword= "Stan1meross2";
     //OKEANOS
     private static final String okeanos = "snf-38501.ok-kno.grnetcloud.net";
     private static final String okeanosUser = "near_users"; //ONLY SELECT INSERT UPDATE DELETE
@@ -54,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     public static int KDTreeLeafMaxPoints = 64; //CAN BE MODIFIED
     public static int QuadTreeLeafMaxPoints = 16; //CAN BE MODIFIED
 
-    public static int k = 5; //CAN BE MODIFIED
+    public static int k = 100; //CAN BE MODIFIED
     public static int kmNum = 5;
     public static String kmFile = kmNum + "km"; //1km 5km 25km 100km
     public static String method = "sqlite_spatialite";  //1:linear 2:sqlite_default, sqlite_rtree, sqlite_spatialite 3:sqlserver 4:kd 5:quad 6:rtree 7:directSpatialite 8:directQuadTree
@@ -67,9 +62,9 @@ public class MainActivity extends AppCompatActivity {
     public static String table = "geopoints_" + kmFile; //CHANGE ONLY kmFile
     public static String database_SQLite = "geopoints_" + kmFile; //CHANGE ONLY kmFile
 
-
     public static int count=0;
     public static int time=0;
+    public static int diameter = 3000;
 
     //CLASS VARIABLES
     private String phone;

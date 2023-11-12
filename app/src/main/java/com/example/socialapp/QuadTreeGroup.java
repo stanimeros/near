@@ -209,7 +209,7 @@ public class QuadTreeGroup {
             }
             file.close();
             QuadTree tree = new QuadTree(points,leafMaxPoints);
-            saveTree(n,tree);
+            //saveTree(n,tree);
             return tree;
         }catch (Exception e){
             System.out.println("Error in generateTree!");

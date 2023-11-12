@@ -1,5 +1,7 @@
 package com.example.socialapp;
 
+import static java.lang.Thread.sleep;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.helper.widget.Layer;
@@ -18,17 +20,23 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("ALL")
@@ -42,6 +50,7 @@ public class Feed extends AppCompatActivity {
     private View selectedView ;
     private TextView message;
     private SwipeRefreshLayout swipeRefreshLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,8 +123,41 @@ public class Feed extends AppCompatActivity {
                                    runOnUiThread(createList::execute);
                                    return null;
                                }
-
-                               System.out.println("Real location:"+loc.getLongitude()+","+loc.getLatitude());
+//                               GeoPoint pamak = new GeoPoint((float)22.96017,(float)40.625041);
+//
+//                               Random rand = new Random();
+//                               int random = rand.nextInt(500000); //1km count
+//
+//                               String line = "";
+//                               BufferedReader file = new BufferedReader(new InputStreamReader(getBaseContext().getAssets().open(MainActivity.unsorted_input)));
+//
+//                               for (int i=0;i<random;i++){
+//                                   line = file.readLine();
+//                               }
+//                               int br = line.indexOf("-");
+//                               char[] chars = line.toCharArray();
+//                               char[] lon = Arrays.copyOfRange(chars, 0, br);
+//                               char[] lat = Arrays.copyOfRange(chars, br+1, chars.length);
+//
+//                               while (new GeoPoint(String.valueOf(lon),String.valueOf(lat)).distanceTo(pamak)>MainActivity.diameter/2){
+//                                   random = rand.nextInt(37800); //1km count
+//
+//                                   line = "";
+//                                   file = new BufferedReader(new InputStreamReader(getBaseContext().getAssets().open(MainActivity.unsorted_input)));
+//
+//                                   for (int i=0;i<random;i++){
+//                                       line = file.readLine();
+//                                   }
+//                                   br = line.indexOf("-");
+//                                   chars = line.toCharArray();
+//                                   lon = Arrays.copyOfRange(chars, 0, br);
+//                                   lat = Arrays.copyOfRange(chars, br+1, chars.length);
+//                               }
+//
+//                               loc.setLongitude(Double.parseDouble(String.valueOf(lon)));
+//                               loc.setLatitude(Double.parseDouble(String.valueOf(lat)));
+//
+//                               System.out.println("Real location:"+loc.getLongitude()+","+loc.getLatitude());
 
                                myLocation = new MyLocation();
                                myLocation.setMyPointOfInterestSearch(new GeoPoint((float) loc.getLongitude(),(float)loc.getLatitude()), phone,getApplicationContext()); //set our location
@@ -150,10 +192,16 @@ public class Feed extends AppCompatActivity {
                 System.out.println("Network location is enabled!");
             }
 
-            new Thread(() -> {
-                AsyncTaskCreateList createList = new AsyncTaskCreateList();
-                createList.execute();
-            }).start();
+
+//            Random rand = new Random();
+//            int random = rand.nextInt(6000);
+//            new Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    doRefresh();
+//                }
+//            }, random+6000);
+
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -273,6 +321,10 @@ public class Feed extends AppCompatActivity {
                }
 
                ArrayList<User> temp = ServerSQL.getFriends(phone);
+//               ArrayList<User> real = ServerSQL.getFriendsRealLocations(phone);
+//               GeoPoint realLoc = ServerSQL.getRealLocation(phone);
+               //ServerSQL.uploadExperimentRealPositions(realLoc,temp,real);
+
                if (temp.isEmpty()){
                    if (ServerSQL.isExecuted()){
                        System.out.println("No friends!");
@@ -365,7 +417,7 @@ public class Feed extends AppCompatActivity {
                 Date now = new Date();
                 long diffInMillies = now.getTime() - Objects.requireNonNull(lastTimeUpdated).getTime();
                 long diffInSeconds = TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-                if (diffInSeconds<5){ //5 SECONDS PROTECTION
+                if (diffInSeconds<6){ //SECONDS PROTECTION
                     System.out.println("Aborted:"+key+" updated "+diffInSeconds+" seconds ago!");
                     return false;
                 }

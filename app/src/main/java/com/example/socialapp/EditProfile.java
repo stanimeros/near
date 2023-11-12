@@ -12,11 +12,16 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Spinner;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class EditProfile extends AppCompatActivity {
@@ -53,6 +58,32 @@ public class EditProfile extends AppCompatActivity {
 
             flowLayout = findViewById(R.id.flowLayout);
             flowConstraintLayout = findViewById(R.id.flowConstraintLayout);
+
+            Spinner spinner = findViewById(R.id.spinner_k);
+            List<String> spinnerItems = new ArrayList<String>();
+            spinnerItems.add("5");
+            spinnerItems.add("10");
+            spinnerItems.add("25");
+            spinnerItems.add("100");
+
+            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerItems);
+            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(dataAdapter);
+
+            int position = spinnerItems.indexOf(String.valueOf(MainActivity.k));
+            spinner.setSelection(position);
+
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                    MainActivity.k = Integer.parseInt(spinnerItems.get(position));
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parentView) {
+                    // Do nothing here
+                }
+            });
 
             editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override

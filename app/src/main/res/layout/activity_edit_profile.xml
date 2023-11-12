@@ -56,7 +56,7 @@
         android:id="@+id/textViewEdit1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="75dp"
+        android:layout_marginTop="40dp"
         android:fontFamily="sans-serif-light"
         android:text="@string/username"
         android:textColor="@color/text"
@@ -91,25 +91,52 @@
         android:id="@+id/flowConstraintLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_marginStart="5dp"
-        app:layout_constraintWidth_max="350dp"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewEdit1">
+        app:layout_constraintTop_toBottomOf="@+id/textViewEdit1"
+        app:layout_constraintWidth_max="350dp">
 
         <androidx.constraintlayout.helper.widget.Flow
             android:id="@+id/flowLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:gravity="center"
+            android:orientation="horizontal"
             app:flow_wrapMode="chain"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:fontFamily="sans-serif-light"
+        android:text="k-anonymity"
+        android:textColor="@color/text"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/spinner_k"
+        app:layout_constraintStart_toStartOf="@+id/textViewEdit1"
+        app:layout_constraintTop_toBottomOf="@+id/textViewEdit1" />
+
+    <Spinner
+        android:id="@+id/spinner_k"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:fontFamily="sans-serif-light"
+        android:minHeight="48dp"
+        android:spinnerMode="dropdown"
+        android:textAlignment="center"
+        android:textColor="@color/text"
+        app:layout_constraintBottom_toBottomOf="@+id/textView"
+        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintTop_toTopOf="@+id/textView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

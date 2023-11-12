@@ -1,5 +1,7 @@
 package com.example.socialapp;
 
+import static com.example.socialapp.ServerSQL.uploadExperimentResultForStatistics;
+
 import android.content.Context;
 
 import java.util.ArrayList;
@@ -10,14 +12,19 @@ public class MyLocation {
     private GeoPoint myPointOfInterest;
     GeoPoint pamak = new GeoPoint((float)22.96017,(float)40.625041);
 
+    long tempMillis;
+    ArrayList<GeoPoint> tempList;
+
     public void setMyPointOfInterestSearch(GeoPoint target, String phone,Context context){
         String method = MainActivity.method;
         int k = MainActivity.k;
 
-        if (target.distanceTo(pamak)>MainActivity.kmNum*1000 && !method.contains("direct")){
+        if (target.distanceTo(pamak)>MainActivity.kmNum*1000 + 1000 && !method.contains("direct")){
             System.out.println("Phone is too far from pamak!"); //Prevent calculations far away from dataset's center!
             MainActivity.method = "directQuadTree";
             directDownloadQuadTree(target,phone,k);
+
+            ServerSQL.setLocation(myPointOfInterest,phone,target);
             return;
         }
 
@@ -43,14 +50,24 @@ public class MyLocation {
             directDownloadSpatialite(target,phone,k,context);
         }
 
+        ServerSQL.uploadResults(tempMillis,phone);
+        MainActivity.time+=tempMillis;
+        MainActivity.count++;
+
+        //int query_id = Integer.parseInt(ServerSQL.getAutoIncrement());
+        //ServerSQL.uploadExperiment(target,tempList,tempMillis,query_id);
+
+        //ServerSQL.setLocation(myPointOfInterest,phone);
+        ServerSQL.setLocation(myPointOfInterest,phone,target); //set real location too
+
 
         System.out.println("=== AVG TIME ("+MainActivity.count+") === \n"+ MainActivity.time/MainActivity.count +"\n=== === ===");
     }
     private void printMyList(ArrayList<GeoPoint> list,GeoPoint target){
         for (int i=0;i<list.size();i++){
-            System.out.println((i+1)+") Lon: "+list.get(i).getLon() +" Lat: "+list.get(i).getLat()+ " distance "+target.distanceTo(list.get(i)));
+            //System.out.println((i+1)+") Lon: "+list.get(i).getLon() +" Lat: "+list.get(i).getLat()+ " distance "+target.distanceTo(list.get(i)));
         }
-        //System.out.println("Last point of list: "+ (list.size())+") Lon: "+list.get(list.size()-1).getLon() +" Lat: "+list.get(list.size()-1).getLat()+ " distance "+target.distanceTo(list.get(list.size()-1)));
+        System.out.println("Last point of list: "+ (list.size())+") Lon: "+list.get(list.size()-1).getLon() +" Lat: "+list.get(list.size()-1).getLat()+ " distance "+target.distanceTo(list.get(list.size()-1)));
     }
     public void setMyPointOfInterestLinearSearch(GeoPoint target, String phone, int k, Context context) {
         try {
@@ -78,11 +95,10 @@ public class MyLocation {
             System.out.println(millis);
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
-            ServerSQL.setLocation(myPointOfInterest,phone);
 
-            ServerSQL.uploadResults(millis,phone);
-            MainActivity.time+=millis;
-            MainActivity.count++;
+            tempMillis = millis;
+            tempList = kNearestList;
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -114,11 +130,9 @@ public class MyLocation {
             System.out.println(millis);
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
-            ServerSQL.setLocation(myPointOfInterest,phone);
 
-            ServerSQL.uploadResults(millis,phone);
-            MainActivity.time+=millis;
-            MainActivity.count++;
+            tempMillis = millis;
+            tempList = kNearestList;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -152,11 +166,9 @@ public class MyLocation {
             System.out.println(millis);
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
-            ServerSQL.setLocation(myPointOfInterest,phone);
 
-            ServerSQL.uploadResults(millis,phone);
-            MainActivity.time+=millis;
-            MainActivity.count++;
+            tempMillis = millis;
+            tempList = kNearestList;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -190,11 +202,10 @@ public class MyLocation {
             System.out.println(millis);
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
-            ServerSQL.setLocation(myPointOfInterest,phone);
 
-            ServerSQL.uploadResults(millis,phone);
-            MainActivity.time+=millis;
-            MainActivity.count++;
+            tempMillis = millis;
+            tempList = kNearestList;
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -227,11 +238,9 @@ public class MyLocation {
             System.out.println(millis);
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
-            ServerSQL.setLocation(myPointOfInterest,phone);
 
-            ServerSQL.uploadResults(millis,phone);
-            MainActivity.time+=millis;
-            MainActivity.count++;
+            tempMillis = millis;
+            tempList = kNearestList;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -265,11 +274,9 @@ public class MyLocation {
             System.out.println(millis);
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
-            ServerSQL.setLocation(myPointOfInterest,phone);
 
-            ServerSQL.uploadResults(millis,phone);
-            MainActivity.time+=millis;
-            MainActivity.count++;
+            tempMillis = millis;
+            tempList = kNearestList;
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -303,11 +310,9 @@ public class MyLocation {
             System.out.println(millis);
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
-            ServerSQL.setLocation(myPointOfInterest,phone);
 
-            ServerSQL.uploadResults(millis,phone);
-            MainActivity.time+=millis;
-            MainActivity.count++;
+            tempMillis = millis;
+            tempList = kNearestList;
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -340,11 +345,9 @@ public class MyLocation {
             System.out.println(millis);
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
-            ServerSQL.setLocation(myPointOfInterest,phone);
 
-            ServerSQL.uploadResults(millis,phone);
-            MainActivity.time+=millis;
-            MainActivity.count++;
+            tempMillis = millis;
+            tempList = kNearestList;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -386,11 +389,9 @@ public class MyLocation {
             System.out.println(millis);
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
-            ServerSQL.setLocation(myPointOfInterest,phone);
 
-            ServerSQL.uploadResults(millis,phone);
-            MainActivity.time+=millis;
-            MainActivity.count++;
+            tempMillis = millis;
+            tempList = kNearestList;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -431,12 +432,10 @@ public class MyLocation {
             System.out.println(millis);
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
-            ServerSQL.setLocation(myPointOfInterest,phone);
 
             sqLiteSpatialiteDirectFromOSM.addPreviousPoint(myPointOfInterest,context);
-            ServerSQL.uploadResults(millis,phone);
-            MainActivity.time+=millis;
-            MainActivity.count++;
+            tempMillis = millis;
+            tempList = kNearestList;
         } catch (Exception e) {
             e.printStackTrace();
         }

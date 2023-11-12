@@ -199,6 +199,51 @@ public class ServerSQL {
         return friends;
     }
 
+    public static ArrayList<User> getFriendsRealLocations(String phone){
+        ArrayList<User> friends = new ArrayList<>();
+
+        ServerSQLConnection serverSQLConnection = new ServerSQLConnection();
+        if (MainActivity.jdbcName.equals("postgresql")){
+            serverSQLConnection.Select("SELECT users.phone, users.username, users.image, users.updateTime, " +
+                    "ST_X(users.location::geometry) as longitude, ST_Y(users.location::geometry) as latitude, " +
+                    "ST_DistanceSphere(location::geometry, ST_SetSRID( " +
+                    "ST_MakePoint( " +
+                    "(SELECT ST_X(location::geometry) FROM users WHERE phone = '"+phone+"'), " +
+                    "(SELECT ST_Y(location::geometry) FROM users WHERE phone = '"+phone+"')), " +
+                    "4326)::geometry) AS distance " +
+                    "FROM users " +
+                    "INNER JOIN friends ON (friends.friendId = (SELECT id FROM users WHERE phone = '"+phone+"') AND friends.userId = users.id) " +
+                    "OR (friends.userId = (SELECT id FROM users WHERE phone = '"+phone+"') AND friends.friendId = users.id) " +
+                    "WHERE friends.accepted = 1 " +
+                    "ORDER BY distance ASC");
+        }else {
+            serverSQLConnection.Select("SELECT users.phone, users.username, users.image, users.updateTime, " +
+                    "ST_X(users.realLocation) as longitude, ST_Y(users.realLocation) as latitude, " +
+                    "ST_Distance_Sphere(realLocation, ST_GeomFromText(" +
+                    "CONCAT('POINT(', " +
+                    "(SELECT ST_X(realLocation) FROM users WHERE phone = '" + phone + "'), ' ', " +
+                    "(SELECT ST_Y(realLocation) FROM users WHERE phone = '" + phone + "'), ')') " +
+                    ", 4326)) AS distance " +
+                    "FROM users " +
+                    "INNER JOIN friends ON (friends.friendId = (SELECT id FROM users WHERE phone = '" + phone + "') AND friends.userId = users.id) " +
+                    "OR (friends.userId = (SELECT id FROM users WHERE phone = '" + phone + "') AND friends.friendId = users.id) " +
+                    "WHERE friends.accepted = 1 " +
+                    "ORDER BY distance ASC");
+        }
+        ServerSQL.ThreadStart(serverSQLConnection);
+
+        setExecuted(serverSQLConnection.isExecuted());
+        ArrayList<String> results = serverSQLConnection.getResults();
+
+        for (int i=0;i<results.size();i=i+7) {
+            User user = new User(results.get(i), results.get(i + 1),
+                    results.get(i + 2), results.get(i + 3), new GeoPoint(results.get(i + 4), results.get(i + 5)));
+            user.setMetersAway(Float.parseFloat(results.get(i+6)));
+            friends.add(user);
+        }
+        return friends;
+    }
+
     public static MyLocation getMyLocation(String phone){
         ServerSQLConnection serverSQLConnection = new ServerSQLConnection();
         if (MainActivity.jdbcName.equals("postgresql")){
@@ -252,7 +297,7 @@ public class ServerSQL {
     }
 
     @SuppressLint("SimpleDateFormat")
-    public static boolean setLocation(GeoPoint myPointOfInterest,String phone) {
+    public static boolean setLocation(GeoPoint myPointOfInterest,String phone,GeoPoint realLocation) {
         String updateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         //System.out.println(updateTime);
 
@@ -260,7 +305,9 @@ public class ServerSQL {
         if (MainActivity.jdbcName.equals("postgresql")){
             serverSQLConnection.Update("UPDATE users SET updateTime='"+updateTime+"',location=ST_SetSRID(ST_MakePoint("+myPointOfInterest.getLon()+","+myPointOfInterest.getLat()+"),4326)::point WHERE phone = '" + phone + "'");
         }else{
-            serverSQLConnection.Update("UPDATE users SET updateTime='"+updateTime+"',location=ST_GeomFromText('POINT("+myPointOfInterest.getLon()+" "+myPointOfInterest.getLat()+")') WHERE phone = '" + phone + "'");
+            //serverSQLConnection.Update("UPDATE users SET updateTime='"+updateTime+"',location=ST_GeomFromText('POINT("+myPointOfInterest.getLon()+" "+myPointOfInterest.getLat()+")') WHERE phone = '" + phone + "'"); //SET NORMAL
+            serverSQLConnection.Update("UPDATE users SET updateTime='"+updateTime+"', realLocation=ST_GeomFromText('POINT("+realLocation.getLon()+" "+realLocation.getLat()+")'), location=ST_GeomFromText('POINT("+myPointOfInterest.getLon()+" "+myPointOfInterest.getLat()+")') WHERE phone = '" + phone + "'"); //SET real location too
+
         }
 
         ServerSQL.ThreadStart(serverSQLConnection);
@@ -293,6 +340,101 @@ public class ServerSQL {
                 "VALUES ('"+MainActivity.method+"','"+MainActivity.kmFile+"','"+millis+"','"+phone+"','"+Build.VERSION.SDK_INT+"','"+Build.VERSION.RELEASE+"','"+Build.MODEL+"','"+Build.MANUFACTURER+"','"+updateTime+"')");
         ServerSQL.ThreadStart(serverSQLConnection);
         return serverSQLConnection.isExecuted();
+    }
+
+    public static String getAutoIncrement() {
+        ServerSQLConnection serverSQLConnection = new ServerSQLConnection();
+        serverSQLConnection.Select("SELECT AUTO_INCREMENT " +
+                "FROM information_schema.TABLES " +
+                "WHERE TABLE_SCHEMA = 'social' " +
+                "AND TABLE_NAME = 'experiments_queries'");
+        ServerSQL.ThreadStart(serverSQLConnection);
+        return serverSQLConnection.getResult();
+    }
+
+    public static boolean uploadExperiment(GeoPoint real, ArrayList<GeoPoint> results, Long millis, int query_id) {
+        int filtered = 1;
+
+        ServerSQLConnection serverSQLConnection = new ServerSQLConnection();
+        StringBuilder sql = new StringBuilder("INSERT INTO experiments_queries(method,km,k,millis,filtered,real_lon,real_lat) " +
+                "VALUES ('" + MainActivity.method + "','" + MainActivity.kmFile + "','" + MainActivity.k + "','" + millis + "','"+filtered+"','"+real.getLon()+"','"+real.getLat()+"');\n");
+
+        for (int i=0;i<results.size();i++){
+            sql.append("INSERT INTO experiments_points(query_id,position,lon,lat,distance_from_target,distance_from_real) " + "VALUES ('").
+                    append(query_id)
+                    .append("','")
+                    .append(i+1)
+                    .append("','")
+                    .append(results.get(i).getLon())
+                    .append("','")
+                    .append(results.get(i).getLat())
+                    .append("','")
+                    .append(results.get(i).distanceTo(results.get(0)))
+                    .append("','")
+                    .append(results.get(i).distanceTo(real))
+                    .append("');\n");
+        }
+
+        serverSQLConnection.Insert(String.valueOf(sql));
+        ServerSQL.ThreadStart(serverSQLConnection);
+        return serverSQLConnection.isExecuted();
+    }
+
+    public static boolean uploadExperimentResultForStatistics(int k,double side,double internal,int box_count, int circle_count) {
+        int filtered = 0;
+
+        ServerSQLConnection serverSQLConnection = new ServerSQLConnection();
+        String sql = "INSERT INTO experiments_results_statistics(diameter,k,final_bounding_box_side,final_internal_side,final_bounding_box_points,final_circle_points,filtered) " +
+                "VALUES ('" + MainActivity.diameter + "','" + k + "','" + side + "','" + internal + "','" + box_count + "','" + circle_count + "','" + filtered + "');";
+        serverSQLConnection.Insert(sql);
+        ServerSQL.ThreadStart(serverSQLConnection);
+        return serverSQLConnection.isExecuted();
+    }
+
+    public static boolean uploadExperimentRealPositions(GeoPoint myPosition,ArrayList<User> POIsList,ArrayList<User> realList) {
+
+        boolean hasError = false;
+
+        for (int i=0;i<realList.size();i++){
+            if (!realList.get(i).getName().equals(POIsList.get(i).getName())){
+                hasError = true;
+                break;
+            }
+        }
+        int errors = 0;
+        if (hasError){
+            for (int i=0;i<realList.size();i++){
+                for (int j=0;j<POIsList.size();j++){
+                    if (!realList.get(i).getName().equals(POIsList.get(j).getName())){
+                        if (realList.get(i).getPoint().distanceTo(myPosition)<POIsList.get(j).getPoint().distanceTo(myPosition)){
+                            errors++;
+                            break;
+                        }
+                    }else{
+                        break;
+                    }
+                }
+            }
+
+            for (int i=0;i<realList.size();i++){
+                System.out.println("REAL: " + realList.get(i).getName() + " -- CURRENT: " + POIsList.get(i).getName());
+            }
+        }
+        ServerSQLConnection serverSQLConnection = new ServerSQLConnection();
+        serverSQLConnection.Update("INSERT INTO experiments_positions(errors,friends,diameter,k,filtered) " +
+                "VALUES ('"+errors+"','"+realList.size()+"','"+MainActivity.diameter+"','"+MainActivity.k+"','1')");
+        ServerSQL.ThreadStart(serverSQLConnection);
+        return serverSQLConnection.isExecuted();
+    }
+
+    public static  GeoPoint getRealLocation(String phone) {
+        ServerSQLConnection serverSQLConnection = new ServerSQLConnection();
+        serverSQLConnection.Select("SELECT ST_X(users.realLocation) as longitude,ST_Y(users.realLocation) as latitude FROM users WHERE phone='"+phone+"'");
+        ServerSQL.ThreadStart(serverSQLConnection);
+
+        setExecuted(serverSQLConnection.isExecuted());
+        ArrayList<String> results = serverSQLConnection.getResults();
+        return new GeoPoint(results.get(0), results.get(1));
     }
 
     public static void getSettings(Context context) {
@@ -412,4 +554,6 @@ public class ServerSQL {
     public static boolean isExecuted(){ return executed;}
 
     public static void setExecuted(boolean b){ executed = b;}
+
+
 }

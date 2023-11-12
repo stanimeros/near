@@ -208,7 +208,7 @@ public class SQLiteSpatialite extends SQLiteOpenHelper {
                         "AND f_geometry_column = 'loc' " +
                         "AND search_frame = ST_Buffer(MakePoint("+target.getLon()+","+target.getLat()+", 4326),"+distance+")) " +
                         "ORDER BY ST_Distance(MakePoint("+target.getLon()+","+target.getLat()+", 4326),loc,1) " +
-                        "ASC LIMIT " + k;
+                        "ASC";
 
                 System.out.println(search_frame);
                 stmt = db.prepare(search_frame);
@@ -230,16 +230,26 @@ public class SQLiteSpatialite extends SQLiteOpenHelper {
                     System.out.println("Results are "+kNearestList.size()+" < k: "+k);
                     distanceInKm = distanceInKm * sqrt2;
                     kNearestList.removeAll(kNearestList);
-                }/*else { //CIRCLE SECURITY
-                    if (kNearestList.get(kNearestList.size() - 1).distanceTo(target) > distanceInKm * 1000) {
-                        System.out.println("Got point in the corner! Try again ..");
-                        distanceInKm = distanceInKm * sqrt2;
-                        kNearestList.removeAll(kNearestList);
-                    }
                 }
-                */
+//                else
+//                { //CIRCLE SECURITY
+//                    if (kNearestList.get(k-1).distanceTo(target) > distanceInKm * 1000) {
+//                        System.out.println("Got point in the corner! Try again ..");
+//                        distanceInKm = distanceInKm * sqrt2;
+//                        kNearestList.removeAll(kNearestList);
+//                    }
+//                }
                 stmt.close();
             }
+//            int inside_circle = 0;
+//            for (int i=0;i<kNearestList.size();i++){
+//                if (kNearestList.get(i).distanceTo(target) <= distanceInKm * 1000) {
+//                    inside_circle++;
+//                }
+//            }
+//            if (k!=1){
+//                ServerSQL.uploadExperimentResultForStatistics(k,distanceInKm*1000,kNearestList.get(k-1).distanceTo(target),kNearestList.size(),inside_circle);
+//            }
             db.close();
         } catch (Exception e) {
             e.printStackTrace();

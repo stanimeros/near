@@ -1,42 +1,33 @@
 # Near
-Αυτή η εφαρμογή δημιουργήθηκε στα πλαίσια της πτυχιακής μου εργασίας στο πανεπιστήμιο Μακεδονίας και είναι μια εφαρμογή κοινωνικού δικτύου με στόχο την ιδιωτικότητα βασισμένη στον αλγόριθμο Two Hop Privacy.
+This application was created as part of my undergraduate thesis at the University of Macedonia. It is a social networking application with a focus on privacy based on the Two Hop Privacy algorithm.
 
-<h3>Παραμετροποίηση</h3>
-<strong>API 21+, σχεδιάστηκε σε API 26 x86</strong><br>
-<strong>Δεν ρωτάει για storage, call, contacts permissions, ακόμα.</strong><br>
-<strong>Η τοποθεσία του κινητού πρέπει να είναι εντός 100χλμ από το πανεπιστήμιο Μακεδονίας.</strong>
+## Configuration
+- **API Requirements:** API 21+, designed on API 26 x86
+- **Permissions:** Does not request storage, call, or contacts permissions yet.
+- **Mobile Location:** The mobile location must be within 100km of the University of Macedonia.
 
-Στην MainActivity.java υπάρχουν τα εξής:
-<ul>
-  <li>Παράμετρος method οπού γίνεται η επιλογή της μεθόδου που θα εκτελέσει τον αλγόριθμο. (προκαθορισμένες επιλογές)</li>
-  <li>Παράμετρος k που συμβολίζει το k-anonymity και μπορεί να πάρει οποιαδήποτε τιμή.</li>
-  <li>Παράμετρος kmFile οπού συμβολίζει ποιον πίνακα ή βάση δεδομένων να κοιτάει το project. Μπορεί να είναι αυστηρά 1km, 5km, 25km, 100km ενώ δε δουλεύει με όλες τις μεθόδους.</li>
-  <li>Παράμετρος starting_km οπού συμβολίζει την αρχική τιμή που παίρνει το bounding box με τιμή default: 0.05.</li>
-  <li>Έπειτα για τα δέντρα (KD-Tree και Quad Tree) υπάρχουν τα tree max points και το αντίστοιχο tree leaf max points οπού συμβολίζει το bucket max. Ένας μεγάλος αριθμός (π.χ. 2 million) tree max points δεν θα ενεργοποιήσει το group management ενώ ένας μικρός (π.χ. 100k) αριθμός tree max points θα δημιουργήσει όσα δέντρα χρειάζονται με τη βοήθεια του group helper. Οι αριθμοί είναι συγκεκριμένοι διότι το μεγαλύτερο dataset (100km) έχει 1.6 εκατομμύρια points.</li>
-</ul>
+In the MainActivity.java, the following parameters are present:
+- Method parameter for selecting the algorithm execution method (predefined options).
+- Parameter 'k' representing k-anonymity, which can take any value.
+- Parameter 'kmFile' indicating which table or database to look at in the project. It can strictly be 1km, 5km, 25km, or 100km, but does not work with all methods.
+- Parameter 'starting_km' representing the initial value for the bounding box with a default value of 0.05.
+- For trees (KD-Tree and Quad Tree), there are tree max points and the corresponding tree leaf max points, representing the bucket max. A large number (e.g., 2 million) for tree max points will not activate group management, while a small number (e.g., 100k) will create as many trees as needed with the help of the group helper. The numbers are specific because the largest dataset (100km) has 1.6 million points.
 
-<h3>Μέθοδοι</h3>
-Για την ομαλή λειτουργία της εφαρμογής υπάρχουν αυτοί οι συνδυασμοί παραμέτρων:
-<ul>
-  <li>linear : Δουλεύουν όλοι οι συνδυασμοί αλλά καθυστερεί σε μεγάλο όγκο δεδομένων.</li>
-  <li>sqlite_default : Δουλεύουν όλοι οι συνδυασμοί αλλά χρειάζεται μερικά λεπτά να δημιουργήσει τη βάση στο πρώτο run. //Δεν αποδίδει καλά χρονικά.</li>
-  <li>sqlite_rtree : Δεν δουλεύει, υπάρχει πρόβλημα στην select.</li>
-  <li>sqlite_spatialite : Δουλεύει σε όλους τους συνδυασμούς, θα χρειαστεί μερικά λεπτά να δημιουργηθεί η βάση των 25km και 100km, ενώ για τις βάσεις 1km, 5km τις τραβάει απευθείας από τα assets.</li>
-  <li>sqlserver : Δουλεύει από τον ωκεανό, στον οποίο έχουν ανέβει τα 1km, 5km και 25km. Οπότε δεν θα λειτουργήσει στην περίπτωση των 100km.</li>
-  <li>kd και quad: Δουλεύουν καλά αφού φορτώσουν στην μνήμη. Θα χρειαστεί μερικά δευτερόλεπτα. Τα 1km, 5km ακόμα και 25km μπορούν να τα χειριστούν με ένα δέντρο χωρίς το group manager. Από εκεί και έπειτα επιβαρύνουν πολύ την μνήμη με λύση τα group helper τα οποία ξεκινάνε άμα τα dataset points > tree max points.</li>
-  <li>rtree : Δουλεύει άψογα μόλις φορτώσει στην μνήμη. Δε μπορεί ανταπεξέλθει στα 100km.</li>
-  <li>direct : Προστέθηκε αυτή η μέθοδος, κατεβάζει τα δεδομένα απο το overpass api, φτιάχνει quad tree και βρίσκει τα κοντινά σημεία σε κάτω απο 300ms</li>
-</ul>
+## Methods
+For the smooth operation of the application, the following parameter combinations are available:
+- **linear:** Works for all combinations but delays with a large volume of data.
+- **sqlite_default:** Works for all combinations but takes a few minutes to create the database on the first run. //Not time-efficient.
+- **sqlite_spatialite:** Works for all combinations, takes a few minutes to create the 25km and 100km databases, while the 1km, 5km databases are loaded directly from the assets.
+- **sqlserver:** Works well for the uploaded 1km, 5km, and 25km datasets. Will not work for 100km.
+- **kd and quad:** Work well once loaded into memory. Takes a few seconds. The 1km, 5km, and even 25km can be handled with one tree without the group manager. Beyond that, it burdens the memory significantly. Group helpers are a solution starting when dataset points > tree max points.
+- **rtree:** Works perfectly once loaded into memory. Cannot handle 100km.
+- **direct:** This method has been added. It downloads data from the Overpass API, creates a quad tree, and finds nearby points in under 300ms.
 
-<h3>Επιπλέον πληροφορίες</h3>
-<ul>
-  <li>To 100km dataset δεν υπάρχει στο assets στο project λόγω όγκου. Υπάρχει στο <a href="https://drive.google.com/drive/folders/1_DANO0D_Nn3OxCPlsbVPUt5vqUHI4xrr">Google Drive</a>/files/100km/*.txt</li>
-  <li>Το αρχείο MainActivity.java περιέχει βασικές παραμέτρους.</li>
-  <li>Στο αρχείο Feed.java το gps εντοπίζει αλλαγή τοποθεσίας και ξεκινάει την διαδικασία.</li>
-  <li>Στο αρχείο MyLocation.java ξεκινάει η μέθοδος που έχει επιλεχθεί.</li>
-  <li>Server: Η αναζήτηση κοντινότερων σημείων γίνεται μέσω service ενω όλα τα υπόλοιπα (φιλίες, αιτήματα, λίστες φίλων) γίνονται μέσω jdbc.</li>
-</ul>
+## Additional Information
+- The 100km dataset is not in the assets in the project due to its size.
+- The MainActivity.java file contains basic parameters.
+- In the Feed.java file, GPS detects a change in location and initiates the process.
+- In the MyLocation.java file, the selected method begins.
 
-Σύνδεσμος επιπλέον αρχέιων: <a href="https://drive.google.com/drive/folders/1_DANO0D_Nn3OxCPlsbVPUt5vqUHI4xrr">Google Drive</a>
-
-
+## Server
+- The search for nearby points is done through a service, while all other operations (friendships, requests, friend lists) are done through JDBC.

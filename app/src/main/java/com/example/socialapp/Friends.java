@@ -15,16 +15,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.example.socialapp.tools.Icons;
 import java.util.ArrayList;
 
 @SuppressWarnings("ALL")
 public class Friends extends AppCompatActivity {
 
     Bundle bundle;
-    String phone;
+    User user;
     String friendUsername = "";
-
     LinearLayout linearLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +31,7 @@ public class Friends extends AppCompatActivity {
         setContentView(R.layout.activity_friends);
         try {
             bundle = getIntent().getExtras();
-            phone = bundle.getString("phone");
+            user = bundle.getParcelable("user");
 
             EditText username = findViewById(R.id.editTextUsernameToAdd);
 
@@ -99,7 +98,7 @@ public class Friends extends AppCompatActivity {
             image.setImageResource(Icons.getIcons().get(friendUser.getImage()-1));
 
             TextView username = requestView.findViewById(R.id.textViewRequestUsername);
-            username.setText("Friend request by " + friendUser.getName());
+            username.setText("Friend request by " + friendUser.getUsername());
 
             ImageView accept = requestView.findViewById(R.id.imageViewAccept);
             ImageView reject = requestView.findViewById(R.id.imageViewReject);
@@ -111,7 +110,7 @@ public class Friends extends AppCompatActivity {
                 if (linearLayout.getChildCount()==0){
                     message.setVisibility(View.VISIBLE);
                 }
-                new Thread(() -> ServerSQL.acceptFriendRequest(phone,friendUser.getName())).start();
+                new Thread(() -> HttpHelper.acceptFriendRequest(user.getPhone() ,friendUser.getUsername())).start();
             });
 
             reject.setOnClickListener(v -> {
@@ -119,7 +118,7 @@ public class Friends extends AppCompatActivity {
                 if (linearLayout.getChildCount()==0){
                     message.setVisibility(View.VISIBLE);
                 }
-                new Thread(() -> ServerSQL.removeFriendOrRequest(phone,friendUser.getName())).start();
+                new Thread(() -> HttpHelper.removeFriendOrRequest(user.getPhone(),friendUser.getUsername())).start();
             });
 
             linearLayout.addView(requestView);
@@ -138,7 +137,7 @@ public class Friends extends AppCompatActivity {
         @Override
         protected String doInBackground(String... strings) {
             try {
-                ArrayList<User> friendRequests = ServerSQL.getFriendRequests(phone);
+                ArrayList<User> friendRequests = HttpHelper.getFriendRequests(user.getPhone());
                 runOnUiThread(() -> {
                     linearLayout.removeAllViews();
                     for (int i=0;i<friendRequests.size();i++){
@@ -163,7 +162,7 @@ public class Friends extends AppCompatActivity {
         @Override
         protected String doInBackground(String... strings) {
             try {
-                if (ServerSQL.sendFriendRequest(phone,friendUsername)) {
+                if (HttpHelper.sendFriendRequest(user.getPhone() ,friendUsername)) {
                     runOnUiThread(() -> Toast.makeText(Friends.this, "Request has been sent.", Toast.LENGTH_SHORT).show());
                 }else{
                     runOnUiThread(() -> Toast.makeText(Friends.this, "Something went wrong.", Toast.LENGTH_SHORT).show());

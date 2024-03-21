@@ -20,15 +20,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Spinner;
 
+import com.example.socialapp.tools.Icons;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public class EditProfile extends AppCompatActivity {
     private Bundle bundle;
-    private String username;
-    private Integer image;
-
+    private User user;
     private Flow flowLayout;
     private ConstraintLayout flowConstraintLayout;
 
@@ -45,16 +46,16 @@ public class EditProfile extends AppCompatActivity {
 
         try {
             bundle = getIntent().getExtras();
-            String phone = bundle.getString("phone");
-            username = bundle.getString("username");
-            image = bundle.getInt("image");
-            choice = image;
+            assert bundle != null;
+            user = bundle.getParcelable("user");
+            assert user != null;
+            choice = user.getImage();
 
             TextView cancel = findViewById(R.id.textViewCancel);
             TextView done = findViewById(R.id.textViewDone);
 
             editText = findViewById(R.id.editTextChangeUsername);
-            editText.setText(username);
+            editText.setText(user.getUsername());
 
             flowLayout = findViewById(R.id.flowLayout);
             flowConstraintLayout = findViewById(R.id.flowConstraintLayout);
@@ -94,55 +95,60 @@ public class EditProfile extends AppCompatActivity {
                 }
             });
 
-            for (int i=0;i<Icons.getIcons().size();i++){
+            for (int i = 0; i< Icons.getIcons().size(); i++){
                 addView(i);
             }
 
             cancel.setOnClickListener(v -> goToFeed());
 
             done.setOnClickListener(v -> {
-                String tempUsername = username;
-                int tempImage = image;
-                new Thread(() -> {
-                    if (!Objects.equals(tempImage, choice)) { //If image changed
-                        if (ServerSQL.setImage(phone, choice)) { //If set image executed
+                String tempUsername = user.getUsername();
+                int tempImage = user.getImage();
+
+                if (!Objects.equals(tempImage, choice)) { // If image changed
+                    Thread thread = new Thread(() -> {
+                        if (HttpHelper.setImage(user.getPhone(), choice)) { // If set image executed
                             System.out.println("Image changed successfully!");
+                            user.setImage(choice);
+                            SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(EditProfile.this).edit();
+                            prefEditor.putInt("image", user.getImage());
+                            prefEditor.apply();
                         }
+                    });
+
+                    try {
+                        thread.start();
+                        thread.join();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
-                }).start();
+                }
 
                 if (!tempUsername.equals(editText.getText().toString())) { //If username changed
                     if (editText.getText().toString().isEmpty()){
-                        System.out.println("Username is empty!");
                         Toast.makeText(EditProfile.this, "Username is empty!", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    boolean success = ServerSQL.setUsername(phone, editText.getText().toString());
-                    if (success) { //If set username executed
-                        System.out.println("Username changed successfully!");
 
-                        username = editText.getText().toString();
-                        image = choice;
+                    Thread thread = new Thread(() -> {
+                        if (HttpHelper.setUsername(user.getPhone(), editText.getText().toString())) { //If set image executed
+                            System.out.println("Username changed successfully!");
+                            user.setUsername(editText.getText().toString());
+                            SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(EditProfile.this).edit();
+                            prefEditor.putString("username", user.getUsername());
+                            prefEditor.apply();
+                        }
+                    });
 
-                        SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(EditProfile.this).edit();
-                        prefEditor.putString("username", username);
-                        prefEditor.putInt("image", image);
-                        prefEditor.apply();
-
-                        goToFeed();
-
-                    }else{
-                        System.out.println("Username already exists!");
-                        Toast.makeText(EditProfile.this, "Username already exists!", Toast.LENGTH_SHORT).show();
+                    try {
+                        thread.start();
+                        thread.join();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
-                }else{
-                    image = choice;
-                    SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(EditProfile.this).edit();
-                    prefEditor.putInt("image", image);
-                    prefEditor.apply();
-
-                    goToFeed();
                 }
+
+                goToFeed();
             });
         }catch (Exception e){
             e.printStackTrace();
@@ -157,8 +163,7 @@ public class EditProfile extends AppCompatActivity {
     private void goToFeed()
     {
         Intent intent = new Intent(this, Feed.class);
-        bundle.putString("username",username);
-        bundle.putInt("image",image);
+        bundle.putParcelable("user", user);
         intent.putExtras(bundle);
         startActivity(intent);
         overridePendingTransition(R.anim.fadein, R.anim.fadeout);
@@ -183,7 +188,7 @@ public class EditProfile extends AppCompatActivity {
 
             imageSelected.setImageResource(Icons.getIcons().get(i));
 
-            if (imageViewChoice.getId() - views == image){
+            if (imageViewChoice.getId() - views == user.getImage()){
                 selectedView = imageViewChoice;
                 imageSelectedCheck.bringToFront();
             }

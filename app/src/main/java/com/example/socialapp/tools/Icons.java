@@ -1,4 +1,6 @@
-package com.example.socialapp;
+package com.example.socialapp.tools;
+
+import com.example.socialapp.R;
 
 import java.util.ArrayList;
 public class Icons {

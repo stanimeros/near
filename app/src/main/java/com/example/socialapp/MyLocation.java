@@ -1,8 +1,15 @@
 package com.example.socialapp;
-
-import static com.example.socialapp.ServerSQL.uploadExperimentResultForStatistics;
-
 import android.content.Context;
+
+import com.example.socialapp.methods.LinearSearch;
+import com.example.socialapp.methods.RTreeHelper;
+import com.example.socialapp.methods.SQLiteDefault;
+import com.example.socialapp.methods.SQLiteRTree;
+import com.example.socialapp.methods.SQLiteSpatialite;
+import com.example.socialapp.methods.SQLiteSpatialiteDirect;
+import com.example.socialapp.methods.kd.KDTreeGroup;
+import com.example.socialapp.methods.quad.QuadTree;
+import com.example.socialapp.methods.quad.QuadTreeGroup;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -24,7 +31,7 @@ public class MyLocation {
             MainActivity.method = "directQuadTree";
             directDownloadQuadTree(target,phone,k);
 
-            ServerSQL.setLocation(myPointOfInterest,phone,target);
+            HttpHelper.setLocation(myPointOfInterest,phone);
             return;
         }
 
@@ -50,7 +57,7 @@ public class MyLocation {
             directDownloadSpatialite(target,phone,k,context);
         }
 
-        ServerSQL.uploadResults(tempMillis,phone);
+//        ServerSQL.uploadResults(tempMillis,phone);
         MainActivity.time+=tempMillis;
         MainActivity.count++;
 
@@ -58,7 +65,7 @@ public class MyLocation {
         //ServerSQL.uploadExperiment(target,tempList,tempMillis,query_id);
 
         //ServerSQL.setLocation(myPointOfInterest,phone);
-        ServerSQL.setLocation(myPointOfInterest,phone,target); //set real location too
+        HttpHelper.setLocation(myPointOfInterest,phone); //set real location too
 
 
         System.out.println("=== AVG TIME ("+MainActivity.count+") === \n"+ MainActivity.time/MainActivity.count +"\n=== === ===");
@@ -401,23 +408,23 @@ public class MyLocation {
         try {
             long startTime = System.currentTimeMillis();
             System.out.println("Generating new location using Test Method Search!");
-            SQLiteSpatialiteDirectFromOSM sqLiteSpatialiteDirectFromOSM = new SQLiteSpatialiteDirectFromOSM(context);
+            SQLiteSpatialiteDirect sqLiteSpatialiteDirect = new SQLiteSpatialiteDirect(context);
 
-            if (!sqLiteSpatialiteDirectFromOSM.isNearPreviousPoint(target,context)){
+            if (!sqLiteSpatialiteDirect.isNearPreviousPoint(target,context)){
                 ArrayList<GeoPoint> points = HttpHelper.getPointsFromOSM(target,MainActivity.starting_km); //ERROR IF NOT FOUND NOTHING //500 Meters
                 for (int i=0;i<points.size();i++){
-                    sqLiteSpatialiteDirectFromOSM.addGeoPoint(points.get(i),context);
+                    sqLiteSpatialiteDirect.addGeoPoint(points.get(i),context);
                 }
             }
 
             System.out.println("Finding nearest point of interest..");
-            GeoPoint nearestPoint = sqLiteSpatialiteDirectFromOSM.getKNearestList(1,target, MainActivity.starting_km,context).get(0);
+            GeoPoint nearestPoint = sqLiteSpatialiteDirect.getKNearestList(1,target, MainActivity.starting_km,context).get(0);
             double distance = nearestPoint.distanceTo(target);
             System.out.println("Nearest point was " + nearestPoint.distanceTo(target) + "m away!");
             distance+=10; //ADDING 10 METERS TO AVOID ZERO
 
             System.out.println("Finding K nearest to the nearest point of interest..");
-            ArrayList<GeoPoint> kNearestList = sqLiteSpatialiteDirectFromOSM.getKNearestList(k,nearestPoint,distance/1000,context);
+            ArrayList<GeoPoint> kNearestList = sqLiteSpatialiteDirect.getKNearestList(k,nearestPoint,distance/1000,context);
             printMyList(kNearestList,nearestPoint);
 
             System.out.println("Selecting one of K points randomly..");
@@ -433,7 +440,7 @@ public class MyLocation {
 
             myPointOfInterest = new GeoPoint(kNearestList.get(c).getLon(),kNearestList.get(c).getLat());
 
-            sqLiteSpatialiteDirectFromOSM.addPreviousPoint(myPointOfInterest,context);
+            sqLiteSpatialiteDirect.addPreviousPoint(myPointOfInterest,context);
             tempMillis = millis;
             tempList = kNearestList;
         } catch (Exception e) {

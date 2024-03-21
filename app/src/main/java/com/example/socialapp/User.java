@@ -9,22 +9,52 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
+@SuppressLint("SimpleDateFormat")
 public class User implements Parcelable {
     private int image;
     private String phone;
-    private String name;
-    private GeoPoint point;
+    private String username;
+    private GeoPoint location;
+    private String joinDate;
     private String updateDate;
     private String updateTime;
     private float metersAway;
 
-    @SuppressLint("SimpleDateFormat")
-    public User(String phone, String name, String image, String updateDateTime, GeoPoint point) { //FriendPOI from Database STRINGS
+    public User(String phone, String username, int image) {
         this.phone = phone;
-        this.name = name;
-        this.image = Integer.parseInt(image);
-        this.point = point;
+        this.username = username;
+        this.image = image;
+    }
+    public String getPhone() {
+        return phone;
+    }
+    public void setUsername(String username){
+        this.username = username;
+    }
+    public String getUsername() {
+        return username;
+    }
 
+    public void setImage(int image){
+        this.image = image;
+    }
+    public int getImage() {
+        return image;
+    }
+
+    public void setJoinDate(String joinDate) {
+        this.joinDate = joinDate;
+    }
+
+    public String getJoinDate() {
+        return joinDate;
+    }
+
+    public void setLocation(GeoPoint location){
+        this.location = location;
+    }
+
+    public void setUpdateDatetime (String updateDateTime){
         try {
             Date dateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(updateDateTime);
             this.updateDate = new SimpleDateFormat("yyyyMMdd").format(Objects.requireNonNull(dateTime));
@@ -34,29 +64,7 @@ public class User implements Parcelable {
         }
     }
 
-    public User(String name,String image){
-        this.name = name;
-        this.image = Integer.parseInt(image);
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getImage() {
-        return image;
-    }
-
-    public GeoPoint getPoint() {
-        return point;
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    public String getUpdateDateTime() {
+    public String getUpdateTimeMessage() {
         try {
             String dateNow = new SimpleDateFormat("yyyyMMdd").format(new Date());
             int now = Integer.parseInt(dateNow);
@@ -111,11 +119,7 @@ public class User implements Parcelable {
         this.metersAway = metersAway;
     }
 
-    public float getMetersAway() {
-        return metersAway;
-    }
-
-    public String getStringMetersAway() {
+    public String getMetersAwayMessage() {
         if(metersAway<300){
             return "Near you";
         }else if (metersAway<1000){
@@ -132,17 +136,19 @@ public class User implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeStringArray(new String[] {
-                String.valueOf(this.image),
-                this.phone,
-                this.name,
-                String.valueOf(this.point.getLon()),
-                String.valueOf(this.point.getLat()),
-                this.updateDate,
-                this.updateTime,
-                String.valueOf(this.metersAway)
+        String[] data = new String[9];
 
-        });
+        data[0] = this.phone != null ? this.phone : "0";
+        data[1] = this.username != null ? this.username : "0";
+        data[2] = !String.valueOf(this.image).isEmpty() ? String.valueOf(this.image) : "0";
+        data[3] = this.location != null ? String.valueOf(this.location.getLon()) : "0";
+        data[4] = this.location != null ? String.valueOf(this.location.getLat()) : "0";
+        data[5] = this.joinDate != null ? this.joinDate : "0";
+        data[6] = this.updateDate != null ? this.updateDate : "0";
+        data[7] = this.updateTime != null ? this.updateTime : "0";
+        data[8] = !String.valueOf(this.metersAway).isEmpty() ? String.valueOf(this.metersAway) : "0";
+
+        dest.writeStringArray(data);
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
@@ -156,15 +162,15 @@ public class User implements Parcelable {
     };
 
     public User(Parcel in){
-        String[] data = new String[8];
-
+        String[] data = new String[9];
         in.readStringArray(data);
-        this.image = Integer.parseInt(data[0]);
-        this.phone = data[1];
-        this.name = data[2];
-        this.point = new GeoPoint(data[3],data[4]);
-        this.updateDate = data[5];
-        this.updateTime = data[6];
-        this.metersAway = Float.parseFloat(data[7]);
+        this.phone = data[0];
+        this.username = data[1];
+        this.image = Integer.parseInt(data[2]);
+        this.location = new GeoPoint(data[3],data[4]);
+        this.joinDate = data[5];
+        this.updateDate = data[6];
+        this.updateTime = data[7];
+        this.metersAway = Float.parseFloat(data[8]);
     }
 }

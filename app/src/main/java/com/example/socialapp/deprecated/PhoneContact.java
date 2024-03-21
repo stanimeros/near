@@ -1,4 +1,4 @@
-package com.example.socialapp;
+package com.example.socialapp.deprecated;
 
 public class PhoneContact {
     private String phone;

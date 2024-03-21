@@ -1,6 +1,10 @@
-package com.example.socialapp;
+package com.example.socialapp.methods;
 
 import android.content.Context;
+
+import com.example.socialapp.GeoPoint;
+import com.example.socialapp.MainActivity;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -14,7 +18,7 @@ public class LinearSearch {
             String line;
             int sortsCount = 1;
             ArrayList<GeoPoint> kNearestList = new ArrayList<>();
-            BufferedReader file = new BufferedReader(new InputStreamReader(context.getAssets().open(MainActivity.unsorted_input)));
+            BufferedReader file = new BufferedReader(new InputStreamReader(context.getAssets().open(MainActivity.kmNum + "km.txt")));
 
             for (int i=0;i<k;i++){
                 line = file.readLine();

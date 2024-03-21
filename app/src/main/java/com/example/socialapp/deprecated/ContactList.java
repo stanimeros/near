@@ -1,10 +1,11 @@
-package com.example.socialapp;
+package com.example.socialapp.deprecated;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
+
 import java.util.ArrayList;
 
 public class ContactList {

@@ -1,16 +1,31 @@
-package com.example.socialapp;
+package com.example.socialapp.methods.kd;
+
+import com.example.socialapp.GeoPoint;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
 
-public class QuadTree implements Serializable{
-    public final QuadNode root ;
-    public QuadTree(ArrayList<GeoPoint> geoList, int bucketMax) {
-        root = new QuadNode(0,bucketMax);
+public class KDTree implements Serializable {
+    public final KDNode root ;
+    public KDTree(ArrayList<GeoPoint> geoList, int bucketMax) {
+        root = new KDNode(0,bucketMax);
         root.insertList(geoList);
     }
+
+    public int countNodes() {
+        return countNodes(root);
+    }
+
+    public int countPoints(){
+        return getAllPointsFrom(root).size();
+    }
+
+    public boolean geoPointExists(GeoPoint target) {
+        return searchGeoPoint(root, target);
+    }
+
     public ArrayList<GeoPoint> getKNearestList(GeoPoint target,int k,double distanceInKm) {
         try {
             double radiusInKm = distanceInKm;
@@ -52,8 +67,8 @@ public class QuadTree implements Serializable{
             //Starting a thread for every node!
             ArrayList<GeoPoint> kNearestNeighborsList = new ArrayList<>();
             int countNodes = countNodes(root);
-            if (countNodes>=85){
-                ArrayList<QuadNode> nodesInDepth = getNodesInSpecificDepth(1);
+            if (countNodes>=127){
+                ArrayList<KDNode> nodesInDepth = getNodesInSpecificDepth(1);
                 assert nodesInDepth != null;
                 Thread[] threads = new Thread[nodesInDepth.size()];
 
@@ -76,6 +91,7 @@ public class QuadTree implements Serializable{
                 for (Thread thread : threads) {
                     thread.join();
                 }
+                //All threads finished!
             }else{
                 kNearestNeighborsList = getPointsInsideRectangle(rectMinLat,rectMaxLat,rectMinLon,rectMaxLon,root);
             }
@@ -83,29 +99,27 @@ public class QuadTree implements Serializable{
             Collections.sort(Objects.requireNonNull(kNearestNeighborsList), (o1, o2) -> {
                 Float f1 = o1.distanceTo(target);
                 Float f2 = o2.distanceTo(target);
-                return f1.compareTo(f2);
+                return f1.compareTo(f2);   
             });
 
-            //return getPointsInsideCircle(kNearestNeighborsList,target,radiusInKm); //CIRCLE SECURITY
+            //return getPointsInsideCircle(kNearestNeighborsList,target,radiusInKm);
             return kNearestNeighborsList;
         }catch (Exception e){
-            System.out.println("Error in findNearestNeighborsInradius!");
+            System.out.println("Error in findNearestNeighborsInRadius!");
             e.printStackTrace();
             return null;
         }
     }
 
-    private ArrayList<GeoPoint> getPointsInsideRectangle(double rectMinLat, double rectMaxLat, double rectMinLon, double rectMaxLon, QuadNode node){
+    private ArrayList<GeoPoint> getPointsInsideRectangle(double rectMinLat, double rectMaxLat, double rectMinLon, double rectMaxLon, KDNode node){
         try {
             if (node.hasData()){
                 ArrayList<GeoPoint> geoList = new ArrayList<>();
 
-                if (node.getMinLon()>rectMaxLon || node.getMaxLon()<rectMinLon){
-                    //System.out.println("Out of radius!");
+                if (root.getMinLon()>rectMaxLon || root.getMaxLon()<rectMinLon){
                     return geoList;
                 }
-                if (node.getMinLat()>rectMaxLat || node.getMaxLat()<rectMinLat){
-                    //System.out.println("Out of radius!");
+                if (root.getMinLat()>rectMaxLat || root.getMaxLat()<rectMinLat){
                     return geoList;
                 }
 
@@ -124,52 +138,45 @@ public class QuadTree implements Serializable{
 
             if (node.hasChildren()){
                 ArrayList<GeoPoint> geoList = new ArrayList<>();
-
-                if (node.getMinLon()>rectMaxLon || node.getMaxLon()<rectMinLon){
-                    //System.out.println("Out of radius!");
+                if (root.getMinLon()>rectMaxLon || root.getMaxLon()<rectMinLon){
                     return geoList;
                 }
-                if (node.getMinLat()>rectMaxLat || node.getMaxLat()<rectMinLat){
-                    //System.out.println("Out of radius!");
+                if (root.getMinLat()>rectMaxLat || root.getMaxLat()<rectMinLat){
                     return geoList;
                 }
 
-                if (rectMaxLat < node.getMedianLat()){ //SW - SE
-                    if (rectMaxLon < node.getMedianLon()){ //SW
-                        return getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.SWChild);
-                    }else if (rectMinLon > node.getMedianLon()){ //SE
-                        return getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.SEChild);
-                    }else{ //SW AND SE
-                        geoList.addAll(Objects.requireNonNull(getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.SWChild))) ;
-                        geoList.addAll(Objects.requireNonNull(getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.SEChild))) ;
+                if (node.getDepth()%2==0) { //X
+                    if (rectMaxLat < node.getMedian()) {
+                        return getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.LChild);
+                    } else if(rectMinLat > node.getMedian()) {
+                        return getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.RChild);
+                    }else{
+                        geoList.addAll(Objects.requireNonNull(getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.LChild))) ;
+                        geoList.addAll(Objects.requireNonNull(getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.RChild))) ;
                         return geoList;
                     }
-                }else if(rectMinLat > node.getMedianLat()){ //NW - NE
-                    if (rectMaxLon < node.getMedianLon()){ //NW
-                        return getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.NWChild);
-                    }else if (rectMinLon > node.getMedianLon()){ //NE
-                        return getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.NEChild);
-                    }else{ //NW AND NE
-                        geoList.addAll(Objects.requireNonNull(getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.NWChild))) ;
-                        geoList.addAll(Objects.requireNonNull(getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.NEChild))) ;
+                } else { //Y
+                    if (rectMaxLon < node.getMedian()) {
+                        return getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.LChild);
+                    } else if(rectMinLon > node.getMedian()) {
+                        return getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.RChild);
+                    }else{
+
+                        geoList.addAll(Objects.requireNonNull(getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.LChild))) ;
+                        geoList.addAll(Objects.requireNonNull(getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.RChild))) ;
                         return geoList;
                     }
-                }else{ // ALL REGIONS
-                    geoList.addAll(Objects.requireNonNull(getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.SWChild))) ;
-                    geoList.addAll(Objects.requireNonNull(getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.SEChild))) ;
-                    geoList.addAll(Objects.requireNonNull(getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.NWChild))) ;
-                    geoList.addAll(Objects.requireNonNull(getPointsInsideRectangle(rectMinLat, rectMaxLat, rectMinLon, rectMaxLon, node.NEChild))) ;
-                    return geoList;
                 }
-            }else{
-                return new ArrayList<>();
             }
         }catch (Exception e){
             System.out.println("Error in getPointsInsideRectangle!");
             e.printStackTrace();
             return null;
         }
+        System.out.println("Error in getPointsInsideRectangle!");
+        return null;
     }
+
     private ArrayList<GeoPoint> getPointsInsideCircle(ArrayList<GeoPoint> geoList,GeoPoint target,double radiusInKm){
         try {
             if (geoList.size()==0){
@@ -193,17 +200,68 @@ public class QuadTree implements Serializable{
             return null;
         }
     }
-    private ArrayList<QuadNode> getNodesInSpecificDepth(int specificDepth){
+
+    private int countNodes(KDNode node) {
+        if (node == null) {
+            return 0;
+        }
+        return 1 + countNodes(node.LChild) + countNodes(node.RChild);
+    }
+
+    private ArrayList<GeoPoint> getAllPointsFrom(KDNode node){
+        ArrayList<GeoPoint> geoPointList = new ArrayList<>();
         try {
-            ArrayList<QuadNode> nodes = new ArrayList<>();
+            if (node.hasData()){
+                return node.getBucket();
+            }else {
+                geoPointList.addAll(Objects.requireNonNull(getAllPointsFrom(node.LChild)));
+                geoPointList.addAll(Objects.requireNonNull(getAllPointsFrom(node.RChild)));
+                return geoPointList;
+            }
+        }catch (Exception e){
+            System.out.println("Error: Depth="+node.getDepth());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private boolean searchGeoPoint(KDNode node, GeoPoint target) {
+        try {
+            if (node.contains(target)){
+                return true;
+            }//Return true if point is in the bucket
+
+            if (node.hasChildren()){
+                if (node.getDepth()%2==0) { //X
+                    if (target.getLat() < node.getMedian()) {
+                        return searchGeoPoint(node.LChild, target);
+                    } else {
+                        return searchGeoPoint(node.RChild, target);
+                    }
+                } else { //Y
+                    if (target.getLon() < node.getMedian()) {
+                        return searchGeoPoint(node.LChild, target);
+                    } else {
+                        return searchGeoPoint(node.RChild, target);
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        System.out.println("Point not included!");
+        return false; //Not found
+    }
+
+    private ArrayList<KDNode> getNodesInSpecificDepth(int specificDepth){
+        try {
+            ArrayList<KDNode> nodes = new ArrayList<>();
             nodes.add(root);
             while (nodes.get(0).getDepth()<specificDepth){
-                ArrayList<QuadNode> temp = new ArrayList<>();
+                ArrayList<KDNode> temp = new ArrayList<>();
                 for (int i=0;i<nodes.size();i++){
-                    temp.add(nodes.get(i).SWChild);
-                    temp.add(nodes.get(i).SEChild);
-                    temp.add(nodes.get(i).NWChild);
-                    temp.add(nodes.get(i).NEChild);
+                    temp.add(nodes.get(i).RChild);
+                    temp.add(nodes.get(i).LChild);
                 }
                 nodes = temp;
             }
@@ -213,11 +271,5 @@ public class QuadTree implements Serializable{
             e.printStackTrace();
             return null;
         }
-    }
-    private int countNodes(QuadNode node) {
-        if (node == null) {
-            return 0;
-        }
-        return 1 + countNodes(node.SEChild) + countNodes(node.SWChild) + countNodes(node.NEChild) + countNodes(node.NWChild);
     }
 }

@@ -14,12 +14,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 @SuppressWarnings("ALL")
 public class SignIn extends AppCompatActivity {
-
     private EditText phone;
     private EditText password;
 
@@ -79,24 +77,18 @@ public class SignIn extends AppCompatActivity {
         finish();
     }
 
-    private void goToFeed()
+    private void goToFeed(User user)
     {
-        String username = ServerSQL.getUsername(phone.getText().toString());
-        int image = ServerSQL.getImage(phone.getText().toString());
-        String joinDate = ServerSQL.getJoinDate(phone.getText().toString());
         SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(SignIn.this).edit();
-        prefEditor.putString("phone",phone.getText().toString());
-        prefEditor.putString("username",username);
-        prefEditor.putString("joinDate",joinDate);
-        prefEditor.putInt("image",image);
+        prefEditor.putString("phone",user.getPhone());
+        prefEditor.putString("username",user.getUsername());
+        prefEditor.putString("joinDate",user.getJoinDate());
+        prefEditor.putInt("image",user.getImage());
         prefEditor.apply();
 
         Intent intent = new Intent(this, Feed.class);
         Bundle bundle = new Bundle();
-        bundle.putString("phone",phone.getText().toString());
-        bundle.putString("username",username);
-        bundle.putString("joinDate",joinDate);
-        bundle.putInt("image",image);
+        bundle.putParcelable("user", user);
         intent.putExtras(bundle);
         startActivity(intent);
         overridePendingTransition(R.anim.fadein, R.anim.fadeout);
@@ -108,10 +100,9 @@ public class SignIn extends AppCompatActivity {
         @Override
         protected String doInBackground(String... strings) {
             try {
-                if (ServerSQL.signIn(phone.getText().toString(),password.getText().toString())){
-                    goToFeed();
-                }else{
-                    runOnUiThread(() -> Toast.makeText(SignIn.this,"Incorrect credentials.",Toast.LENGTH_SHORT).show());
+                User user = HttpHelper.signIn(phone.getText().toString(),password.getText().toString());
+                if (user != null){
+                    goToFeed(user);
                 }
             }catch (Exception e){
                 e.printStackTrace();

@@ -1,4 +1,6 @@
-package com.example.socialapp;
+package com.example.socialapp.methods.kd;
+
+import com.example.socialapp.GeoPoint;
 
 import java.io.Serializable;
 import java.util.ArrayList;

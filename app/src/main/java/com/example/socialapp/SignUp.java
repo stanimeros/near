@@ -13,8 +13,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @SuppressWarnings("ALL")
 public class SignUp extends AppCompatActivity {
@@ -91,20 +92,22 @@ public class SignUp extends AppCompatActivity {
 
     private void goToFeed()
     {
-        String username = ServerSQL.getUsername(phone.getText().toString());
-        String joinDate = ServerSQL.getJoinDate(phone.getText().toString());
+        Date currentDate = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = dateFormat.format(currentDate);
+
         SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(SignUp.this).edit();
         prefEditor.putString("phone",phone.getText().toString());
-        prefEditor.putString("username",username);
-        prefEditor.putString("joinDate",joinDate);
+        prefEditor.putString("username",username.getText().toString());
+        prefEditor.putString("joinDate",formattedDate);
         prefEditor.putInt("image",1);
         prefEditor.apply();
 
         Intent intent = new Intent(this, Feed.class);
         Bundle bundle = new Bundle();
         bundle.putString("phone",phone.getText().toString());
-        bundle.putString("username",username);
-        bundle.putString("joinDate",joinDate);
+        bundle.putString("username",username.getText().toString());
+        bundle.putString("joinDate",formattedDate);
         bundle.putInt("image",1);
         intent.putExtras(bundle);
         startActivity(intent);
@@ -118,10 +121,8 @@ public class SignUp extends AppCompatActivity {
         @Override
         protected String doInBackground(String... strings) {
             try {
-                if (ServerSQL.signUp(phone.getText().toString(),username.getText().toString(),password.getText().toString())){
+                if (HttpHelper.signUp(phone.getText().toString(),username.getText().toString(),password.getText().toString())){
                     goToFeed();
-                }else{
-                    runOnUiThread(() -> Toast.makeText(SignUp.this,"Phone already exists or a field has less than 4 characters!",Toast.LENGTH_SHORT).show());
                 }
             }catch (Exception e){
                 e.printStackTrace();

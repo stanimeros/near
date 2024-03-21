@@ -17,7 +17,7 @@ public class GeoPoint implements Serializable {
         this.lon = Float.parseFloat(lon);
     }
 
-    float distanceTo(GeoPoint geoPoint){
+    public float distanceTo(GeoPoint geoPoint){
         Location thisLocation = new Location("thisLocation");
         thisLocation.setLatitude(lat);
         thisLocation.setLongitude(lon);

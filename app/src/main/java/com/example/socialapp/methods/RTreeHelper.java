@@ -1,7 +1,10 @@
-package com.example.socialapp;
+package com.example.socialapp.methods;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+
+import com.example.socialapp.GeoPoint;
+import com.example.socialapp.MainActivity;
 import com.github.davidmoten.grumpy.core.Position;
 import com.github.davidmoten.rtree.Entry;
 import com.github.davidmoten.rtree.RTree;
@@ -33,7 +36,7 @@ public class RTreeHelper{
             //rtree = RTree.star().maxChildren(8).create();
             //rtree = RTree.star().splitter(new SplitterQuadratic()).create();
             System.out.println("Inserting points ..");
-            BufferedReader file = new BufferedReader(new InputStreamReader(context.getAssets().open(MainActivity.unsorted_input)));
+            BufferedReader file = new BufferedReader(new InputStreamReader(context.getAssets().open(MainActivity.kmNum + "km.txt")));
             String line = file.readLine();
             while (line != null) {
                 int br = line.indexOf("-");

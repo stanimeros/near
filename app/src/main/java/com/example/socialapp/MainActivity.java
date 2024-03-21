@@ -6,6 +6,14 @@ import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.socialapp.methods.RTreeHelper;
+import com.example.socialapp.methods.SQLiteDefault;
+import com.example.socialapp.methods.SQLiteRTree;
+import com.example.socialapp.methods.SQLiteSpatialite;
+import com.example.socialapp.methods.SQLiteSpatialiteDirect;
+import com.example.socialapp.methods.kd.KDTreeGroup;
+import com.example.socialapp.methods.quad.QuadTreeGroup;
+import com.example.socialapp.tools.SQLiteCopyFromAssets;
 import com.github.davidmoten.rtree.InternalStructure;
 import com.github.davidmoten.rtree.Serializer;
 import com.github.davidmoten.rtree.Serializers;
@@ -18,81 +26,28 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-    //MariaDB AND POSTGRESQL CONFIGURATION
-    private static final String MariaDBClassName = "org.mariadb.jdbc.Driver";
-    private static final String PostgreSQLClassName = "org.postgresql.Driver";
-    private static final String MariaDBJDBCName = "mariadb";
-    private static final String PostgreSQLJDBCName = "postgresql";
-    private static final String MariaDBPort = "3306";
-    private static final String PostgreSQLPort = "5432";
-    private static final String SQLDatabase= "social";
-    private static final String MariaDBUser = "admin";
-    private static final String PostgreSQLUser = "postgres";
-    private static final String PostgreSQLIP = "10.0.2.2";
-    private static final String PostgreSQLPassword = "admin";
-    //OKEANOS
-    private static final String okeanos = "snf-38501.ok-kno.grnetcloud.net";
-    private static final String okeanosUser = "near_users"; //ONLY SELECT INSERT UPDATE DELETE
-    private static final String okeanosPassword = "stanimeros";
-
-    //APPLICATION CONNECTION
-    public static String className = MariaDBClassName;
-    public static String jdbcName = MariaDBJDBCName;
-    public static String serverIp = okeanos;
-    public static String port = MariaDBPort;
-    public static String database = SQLDatabase;
-    public static String user = okeanosUser;
-    public static String password = okeanosPassword;
-
     //METHOD CONFIGURATION
     public static int treeMaxPoints = 50000*1000; //CAN BE MODIFIED --BIG(*1000) FOR ONE TREE --SMALL(*1,2,3+) FOR MULTIPLE TREES
     public static int KDTreeLeafMaxPoints = 64; //CAN BE MODIFIED
     public static int QuadTreeLeafMaxPoints = 16; //CAN BE MODIFIED
 
-    public static int k = 100; //CAN BE MODIFIED
+    public static int k = 25; //CAN BE MODIFIED
+
     public static int kmNum = 5;
-    public static String kmFile = kmNum + "km"; //1km 5km 25km 100km
-    public static String method = "sqlite_spatialite";  //1:linear 2:sqlite_default, sqlite_rtree, sqlite_spatialite 3:sqlserver 4:kd 5:quad 6:rtree 7:directSpatialite 8:directQuadTree
+
+    public static String method = "directSpatialite";  //1:linear 2:sqlite_default, sqlite_rtree, sqlite_spatialite 3:sqlserver 4:kd 5:quad 6:rtree 7:directSpatialite 8:directQuadTree
     public static double starting_km = 0.05; //CAN BE MODIFIED
+    public static int time = 0;
 
-    //FILE CONFIGURATION -- CHANGE ONLY kmFile
-    public static String sorted_input = kmFile + "_sorted.txt"; //CHANGE ONLY kmFile
-    public static String unsorted_input = kmFile + ".txt"; //CHANGE ONLY kmFile
-
-    public static String table = "geopoints_" + kmFile; //CHANGE ONLY kmFile
-    public static String database_SQLite = "geopoints_" + kmFile; //CHANGE ONLY kmFile
-
-    public static int count=0;
-    public static int time=0;
-    public static int diameter = 3000;
-
-    //CLASS VARIABLES
-    private String phone;
-    private String username;
-    private String joinDate;
-    private Integer image;
-    private Thread thread;
+    public static int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        method = prefs.getString("method",method);
-        k = prefs.getInt("k-anonymity",k);
-        starting_km = Double.parseDouble(prefs.getString("starting_km", String.valueOf(starting_km)));
-        kmFile = prefs.getString("kmFile",kmFile);
-        treeMaxPoints = prefs.getInt("treeMaxPoints",treeMaxPoints);
-        KDTreeLeafMaxPoints = prefs.getInt("KDTreeLeafMaxPoints",KDTreeLeafMaxPoints);
-        QuadTreeLeafMaxPoints = prefs.getInt("QuadTreeLeafMaxPoints",QuadTreeLeafMaxPoints);
-        thread = new Thread(() -> {
-            try {
-                //ServerSQL.getSettings(getApplicationContext()); //GET SETTINGS FROM SERVER # COMMENT THIS IF YOU WANT TO SET THEM MANUALLY
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        });
-        thread.start();
+        Thread thread = null;
+        HttpHelper.context = getBaseContext();
         try {
             if (Objects.equals(method,"sqlite_rtree")){
                 thread = new Thread(() -> {
@@ -113,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 thread = new Thread(() -> {
                     try {
                         long startTime = System.currentTimeMillis();
-                        if (doesDatabaseExistInAssets(database_SQLite)){
+                        if (doesDatabaseExistInAssets("geopoints_" + kmNum + "km")){
                            SQLiteCopyFromAssets sqLiteCopyFromAssets = new SQLiteCopyFromAssets(getApplicationContext());
                             sqLiteCopyFromAssets.getWritableDb();
                         }
@@ -154,12 +109,12 @@ public class MainActivity extends AppCompatActivity {
                 thread = new Thread(() -> {
                     try {
                         long startTime = System.currentTimeMillis();
-                        SQLiteSpatialiteDirectFromOSM sqLiteSpatialiteDirectFromOSM = new SQLiteSpatialiteDirectFromOSM(getApplicationContext());
-                        sqLiteSpatialiteDirectFromOSM.getCount();
+                        SQLiteSpatialiteDirect sqLiteSpatialiteDirect = new SQLiteSpatialiteDirect(getApplicationContext());
+                        sqLiteSpatialiteDirect.getCount();
 
-                        ArrayList<String> names = sqLiteSpatialiteDirectFromOSM.getColumnsNames();
+                        ArrayList<String> names = sqLiteSpatialiteDirect.getColumnsNames();
                         if (!names.contains("loc")) {
-                            sqLiteSpatialiteDirectFromOSM.Initialize(getApplicationContext());
+                            sqLiteSpatialiteDirect.Initialize(getApplicationContext());
                         }
 
                         long endTime = System.currentTimeMillis();
@@ -173,12 +128,12 @@ public class MainActivity extends AppCompatActivity {
                 thread.start();
             }else if (Objects.equals(method, "kd")){
                 thread = new Thread(() -> {
-                    KDTreeGroup.Initialize(MainActivity.treeMaxPoints,MainActivity.KDTreeLeafMaxPoints,MainActivity.sorted_input,this);
+                    KDTreeGroup.Initialize(MainActivity.treeMaxPoints,MainActivity.KDTreeLeafMaxPoints,MainActivity.kmNum + "km_sorted.txt",this);
                 });
                 thread.start();
             }else if (Objects.equals(method, "quad")){
                 thread = new Thread(() -> {
-                    QuadTreeGroup.Initialize(MainActivity.treeMaxPoints,MainActivity.QuadTreeLeafMaxPoints,MainActivity.sorted_input,this);
+                    QuadTreeGroup.Initialize(MainActivity.treeMaxPoints,MainActivity.QuadTreeLeafMaxPoints,MainActivity.kmNum + "km_sorted.txt",this);
                 });
                 thread.start();
             }else if (Objects.equals(method, "rtree")){
@@ -205,11 +160,14 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (prefs.contains("phone")){
-                phone = prefs.getString("phone","");
-                username = prefs.getString("username","");
-                joinDate = prefs.getString("joinDate","");
-                image = prefs.getInt("image",0);
-                goToFeed();
+                String phone = prefs.getString("phone","Error");
+                String username = prefs.getString("username","Error");
+                String joinDate = prefs.getString("joinDate","Error");
+                int image = prefs.getInt("image",0);
+
+                User user = new User(phone, username, image);
+                user.setJoinDate(joinDate);
+                goToFeed(user, thread);
             }else{
                 goToSignUp();
             }
@@ -226,17 +184,12 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    private void goToFeed()
+    private void goToFeed(User user, Thread thread)
     {
         Intent intent = new Intent(this, Feed.class);
         Bundle bundle = new Bundle();
-        bundle.putString("phone",phone);
-        bundle.putString("username",username);
-        bundle.putString("joinDate",joinDate);
-        bundle.putInt("image",image);
-        if (thread!=null){
-            bundle.putLong("threadId",thread.getId());
-        }
+        bundle.putParcelable("user", user);
+        if (thread!=null) { bundle.putLong("threadId",thread.getId()); }
         intent.putExtras(bundle);
         startActivity(intent);
         overridePendingTransition(R.anim.fadein, R.anim.fadeout);

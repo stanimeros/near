@@ -1,4 +1,6 @@
-package com.example.socialapp;
+package com.example.socialapp.methods.quad;
+
+import com.example.socialapp.GeoPoint;
 
 import java.util.ArrayList;
 public class QuadNode {

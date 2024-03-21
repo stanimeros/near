@@ -1,13 +1,15 @@
-package com.example.socialapp;
+package com.example.socialapp.tools;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.example.socialapp.MainActivity;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 public class SQLiteCopyFromAssets extends SQLiteAssetHelper {
     Context context;
     public SQLiteCopyFromAssets(Context context) {
-        super(context, MainActivity.database_SQLite, null, 1);
+        super(context, "geopoints_" + MainActivity.kmNum + "km", null, 1);
         this.context = context;
     }
 

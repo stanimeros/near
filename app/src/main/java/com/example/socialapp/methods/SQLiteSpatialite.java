@@ -1,9 +1,13 @@
-package com.example.socialapp;
+package com.example.socialapp.methods;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.example.socialapp.GeoPoint;
+import com.example.socialapp.MainActivity;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -14,9 +18,10 @@ import jsqlite.Stmt;
 
 public class SQLiteSpatialite extends SQLiteOpenHelper {
     Context context;
+    String table = "geopoints_" + MainActivity.kmNum + "km";
 
     public SQLiteSpatialite(Context context) {
-        super(context, MainActivity.database_SQLite, null, 1);
+        super(context, "geopoints_" + MainActivity.kmNum + "km", null, 1);
         this.context = context;
     }
 
@@ -25,7 +30,7 @@ public class SQLiteSpatialite extends SQLiteOpenHelper {
         try {
             System.out.println("CREATING DB..");
 
-            String query = "CREATE TABLE " + MainActivity.table + " ("
+            String query = "CREATE TABLE " + table + " ("
                     + "lon REAL,"
                     + "lat REAL)";
 
@@ -33,14 +38,14 @@ public class SQLiteSpatialite extends SQLiteOpenHelper {
             System.out.println("TABLE CREATED!");
 
             System.out.println("INSERTING FROM TEXT FILE..");
-            BufferedReader file = new BufferedReader(new InputStreamReader(context.getAssets().open(MainActivity.unsorted_input)));
+            BufferedReader file = new BufferedReader(new InputStreamReader(context.getAssets().open(MainActivity.kmNum + "km.txt")));
             String line = file.readLine();
             while (line != null) {
                 int br = line.indexOf("-");
                 String lon = line.substring(0, br);
                 String lat = line.substring(br + 1);
 
-                query = "INSERT INTO " + MainActivity.table + " VALUES ("
+                query = "INSERT INTO " + table + " VALUES ("
                         + lon + ","
                         + lat + ")";
 
@@ -57,7 +62,7 @@ public class SQLiteSpatialite extends SQLiteOpenHelper {
 
     public void Initialize(Context context){
         try {
-            File dbFile = context.getDatabasePath(MainActivity.database_SQLite);
+            File dbFile = context.getDatabasePath(table);
 
             Database db = new jsqlite.Database();
             db.open(dbFile.getAbsolutePath(), jsqlite.Constants.SQLITE_OPEN_READWRITE
@@ -75,7 +80,7 @@ public class SQLiteSpatialite extends SQLiteOpenHelper {
                 System.out.println(stmt.column_string(0));
             }
 
-            query = "SELECT AddGeometryColumn('"+MainActivity.table+"', 'loc', 4326, 'POINT');";
+            query = "SELECT AddGeometryColumn('"+table+"', 'loc', 4326, 'POINT');";
             //query = "SELECT AddGeometryColumn('geopoints', 'loc', 4326, 'POINT','XY');";
             System.out.println(query);
             stmt = db.prepare(query);
@@ -89,7 +94,7 @@ public class SQLiteSpatialite extends SQLiteOpenHelper {
 
     public void createSpatialColumn(Context context){
         try {
-            File dbFile = context.getDatabasePath(MainActivity.database_SQLite);
+            File dbFile = context.getDatabasePath(table);
 
             Database db = new jsqlite.Database();
             db.open(dbFile.getAbsolutePath(), jsqlite.Constants.SQLITE_OPEN_READWRITE
@@ -98,7 +103,7 @@ public class SQLiteSpatialite extends SQLiteOpenHelper {
             String query;
             Stmt stmt;
 
-            query = "UPDATE " + MainActivity.table + " " +
+            query = "UPDATE " + table + " " +
                     "SET loc = MakePoint(lon, lat, 4326);";
             System.out.println(query);
             stmt = db.prepare(query);
@@ -106,7 +111,7 @@ public class SQLiteSpatialite extends SQLiteOpenHelper {
                 System.out.println(stmt.column_string(0));
             }
 
-            query = "SELECT CreateSpatialIndex('"+MainActivity.table+"', 'loc');";
+            query = "SELECT CreateSpatialIndex('"+table+"', 'loc');";
             System.out.println(query);
             stmt = db.prepare(query);
             while( stmt.step() ) {
@@ -133,7 +138,7 @@ public class SQLiteSpatialite extends SQLiteOpenHelper {
             }
             stmt.close();
              */
-            File dbFile = context.getDatabasePath(MainActivity.database_SQLite);
+            File dbFile = context.getDatabasePath(table);
 
             Database db = new jsqlite.Database();
             db.open(dbFile.getAbsolutePath(), jsqlite.Constants.SQLITE_OPEN_READWRITE
@@ -188,23 +193,23 @@ public class SQLiteSpatialite extends SQLiteOpenHelper {
                  */
 
                 String st_within_spatial = "SELECT lon AS longitude, lat AS latitude " +
-                        "FROM " + MainActivity.table + " "+
+                        "FROM " + table + " "+
                         "WHERE ST_Within(loc,ST_Buffer(MakePoint("+target.getLon()+","+target.getLat()+", 4326),"+distance+")) " +
                         "AND ROWID IN (" +
                         "SELECT ROWID " +
                         "FROM SpatialIndex " +
-                        "WHERE f_table_name = '"+MainActivity.table+"' " +
+                        "WHERE f_table_name = '"+table+"' " +
                         "AND f_geometry_column = 'loc' " +
                         "AND search_frame = ST_Buffer(MakePoint("+target.getLon()+","+target.getLat()+", 4326),"+distance+")) " +
                         "ORDER BY ST_Distance(MakePoint("+target.getLon()+","+target.getLat()+", 4326),loc,1) " +
                         "ASC LIMIT " + k;
 
                 String search_frame = "SELECT lon AS longitude, lat AS latitude " +
-                        "FROM " + MainActivity.table + " "+
+                        "FROM " + table + " "+
                         "WHERE ROWID IN (" +
                         "SELECT ROWID " +
                         "FROM SpatialIndex " +
-                        "WHERE f_table_name = '"+MainActivity.table+"' " +
+                        "WHERE f_table_name = '"+table+"' " +
                         "AND f_geometry_column = 'loc' " +
                         "AND search_frame = ST_Buffer(MakePoint("+target.getLon()+","+target.getLat()+", 4326),"+distance+")) " +
                         "ORDER BY ST_Distance(MakePoint("+target.getLon()+","+target.getLat()+", 4326),loc,1) " +
@@ -288,7 +293,7 @@ public class SQLiteSpatialite extends SQLiteOpenHelper {
         try {
             System.loadLibrary("sqliteX");
             SQLiteDatabase db = this.getWritableDatabase();
-            Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + MainActivity.table + " AS COUNT", null);
+            Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + table + " AS COUNT", null);
             cursor.moveToFirst();
             int result = cursor.getInt(0);
             System.out.println("TABLE SIZE: "+ result);
@@ -303,7 +308,7 @@ public class SQLiteSpatialite extends SQLiteOpenHelper {
 
     public ArrayList<String> getColumnsNames() {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + MainActivity.table + " LIMIT 0", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + table + " LIMIT 0", null);
         String[] columnNames = cursor.getColumnNames();
         cursor.close();
         db.close();
@@ -312,7 +317,7 @@ public class SQLiteSpatialite extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + MainActivity.table);
+        db.execSQL("DROP TABLE IF EXISTS " + table);
         onCreate(db);
     }
 }

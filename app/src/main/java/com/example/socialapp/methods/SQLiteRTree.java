@@ -1,20 +1,23 @@
-package com.example.socialapp;
-
+package com.example.socialapp.methods;
 import org.sqlite.database.sqlite.SQLiteDatabase;
 import org.sqlite.database.sqlite.SQLiteOpenHelper;
-
 import android.content.Context;
 import android.database.Cursor;
+
+import com.example.socialapp.GeoPoint;
+import com.example.socialapp.MainActivity;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
+
 public class SQLiteRTree extends SQLiteOpenHelper { //THIS METHOD HAS FAILED DUE TO READING REAL/TEXT PROBLEM
     Context context;
+    String table = "geopoints_" + MainActivity.kmNum + "km";
     public SQLiteRTree(Context context){
-        super(context, MainActivity.database_SQLite, null, 1);
+        super(context, "geopoints_" + MainActivity.kmNum + "km", null, 1);
         this.context = context;
     }
 
@@ -38,7 +41,7 @@ public class SQLiteRTree extends SQLiteOpenHelper { //THIS METHOD HAS FAILED DUE
 
             int id = 4;
             System.out.println("INSERTING FROM TEXT FILE..");
-            BufferedReader file = new BufferedReader(new InputStreamReader(context.getAssets().open(MainActivity.unsorted_input)));
+            BufferedReader file = new BufferedReader(new InputStreamReader(context.getAssets().open(MainActivity.kmNum + "km.txt")));
             String line = file.readLine();
             while (line != null) {
                 int br = line.indexOf("-");
@@ -122,7 +125,7 @@ public class SQLiteRTree extends SQLiteOpenHelper { //THIS METHOD HAS FAILED DUE
         try {
             System.loadLibrary("sqliteX");
             SQLiteDatabase db = this.getWritableDatabase();
-            Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + MainActivity.table + " AS COUNT", null);
+            Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + table + " AS COUNT", null);
             cursor.moveToFirst();
             int result = cursor.getInt(0);
             System.out.println("TABLE SIZE: "+ result);
@@ -138,7 +141,7 @@ public class SQLiteRTree extends SQLiteOpenHelper { //THIS METHOD HAS FAILED DUE
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int version) {
         System.loadLibrary("sqliteX");
-        db.execSQL("DROP TABLE IF EXISTS " + MainActivity.table);
+        db.execSQL("DROP TABLE IF EXISTS " + table);
         onCreate(db);
     }
 }

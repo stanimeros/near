@@ -1,7 +1,5 @@
 package com.example.socialapp;
 
-import static java.lang.Thread.sleep;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.helper.widget.Layer;
@@ -20,37 +18,30 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import com.example.socialapp.tools.Icons;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
-import java.util.Random;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("ALL")
 public class Feed extends AppCompatActivity {
     private Bundle bundle;
-    private String phone;
+    private User user;
     private MyLocation myLocation;
-    private ArrayList<User> myFriends;
+    private ArrayList<User> friends;
     private LinearLayout linearLayout;
     private RelativeLayout relativeLayout;
     private View selectedView ;
     private TextView message;
     private SwipeRefreshLayout swipeRefreshLayout;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,19 +51,15 @@ public class Feed extends AppCompatActivity {
             checkPermission();
 
             bundle = getIntent().getExtras();
-            phone = bundle.getString("phone");
-            String username = bundle.getString("username");
-            String joinDate = bundle.getString("joinDate");
-            int image = bundle.getInt("image");
-            myFriends = bundle.getParcelableArrayList("list");
-
+            user = bundle.getParcelable("user");
+            friends = bundle.getParcelableArrayList("friends_list");
             long threadId = bundle.getLong("threadId");
 
             TextView textViewUsername = findViewById(R.id.textViewFeedUsername);
-            textViewUsername.setText(username);
+            textViewUsername.setText(user.getUsername());
 
             ImageView profile = findViewById(R.id.imageViewFeedProfile);
-            profile.setImageResource(Icons.getIcons().get(image -1));
+            profile.setImageResource(Icons.getIcons().get(user.getImage() - 1));
 
             swipeRefreshLayout = findViewById(R.id.swipeToRefreshFeed);
             swipeRefreshLayout.setOnRefreshListener(() -> {
@@ -86,7 +73,7 @@ public class Feed extends AppCompatActivity {
 
             TextView textViewJoinDate = findViewById(R.id.textViewFeedJoinDate);
             @SuppressLint("SimpleDateFormat")
-            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(joinDate);
+            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(user.getJoinDate().toString());
             assert date != null;
             @SuppressLint("SimpleDateFormat")
             String join = new SimpleDateFormat(" MMMM dd, yyyy").format(date);
@@ -123,44 +110,9 @@ public class Feed extends AppCompatActivity {
                                    runOnUiThread(createList::execute);
                                    return null;
                                }
-//                               GeoPoint pamak = new GeoPoint((float)22.96017,(float)40.625041);
-//
-//                               Random rand = new Random();
-//                               int random = rand.nextInt(500000); //1km count
-//
-//                               String line = "";
-//                               BufferedReader file = new BufferedReader(new InputStreamReader(getBaseContext().getAssets().open(MainActivity.unsorted_input)));
-//
-//                               for (int i=0;i<random;i++){
-//                                   line = file.readLine();
-//                               }
-//                               int br = line.indexOf("-");
-//                               char[] chars = line.toCharArray();
-//                               char[] lon = Arrays.copyOfRange(chars, 0, br);
-//                               char[] lat = Arrays.copyOfRange(chars, br+1, chars.length);
-//
-//                               while (new GeoPoint(String.valueOf(lon),String.valueOf(lat)).distanceTo(pamak)>MainActivity.diameter/2){
-//                                   random = rand.nextInt(37800); //1km count
-//
-//                                   line = "";
-//                                   file = new BufferedReader(new InputStreamReader(getBaseContext().getAssets().open(MainActivity.unsorted_input)));
-//
-//                                   for (int i=0;i<random;i++){
-//                                       line = file.readLine();
-//                                   }
-//                                   br = line.indexOf("-");
-//                                   chars = line.toCharArray();
-//                                   lon = Arrays.copyOfRange(chars, 0, br);
-//                                   lat = Arrays.copyOfRange(chars, br+1, chars.length);
-//                               }
-//
-//                               loc.setLongitude(Double.parseDouble(String.valueOf(lon)));
-//                               loc.setLatitude(Double.parseDouble(String.valueOf(lat)));
-//
-//                               System.out.println("Real location:"+loc.getLongitude()+","+loc.getLatitude());
 
                                myLocation = new MyLocation();
-                               myLocation.setMyPointOfInterestSearch(new GeoPoint((float) loc.getLongitude(),(float)loc.getLatitude()), phone,getApplicationContext()); //set our location
+                               myLocation.setMyPointOfInterestSearch(new GeoPoint((float) loc.getLongitude(),(float)loc.getLatitude()), user.getPhone(), getApplicationContext()); //set our location
                                AsyncTaskCreateList createList = new AsyncTaskCreateList();
                                runOnUiThread(createList::execute);
                            }catch (Exception e){
@@ -177,7 +129,9 @@ public class Feed extends AppCompatActivity {
                 @Override
                 public void onProviderDisabled(@NonNull String provider) {}
                 @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {}
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                    System.out.println("Status changed");
+                }
             };
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -192,16 +146,8 @@ public class Feed extends AppCompatActivity {
                 System.out.println("Network location is enabled!");
             }
 
-
-//            Random rand = new Random();
-//            int random = rand.nextInt(6000);
-//            new Handler().postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    doRefresh();
-//                }
-//            }, random+6000);
-
+            AsyncTaskCreateList createList = new AsyncTaskCreateList();
+            createList.execute();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -229,7 +175,7 @@ public class Feed extends AppCompatActivity {
                         message.setText(R.string.noFriends);
                         message.setVisibility(View.VISIBLE);
                     }
-                    new Thread(() -> ServerSQL.removeFriendOrRequest(phone,friend.getName())).start();
+                    new Thread(() -> HttpHelper.removeFriendOrRequest(user.getPhone(), friend.getUsername())).start();
                 });
 
                 callButton.setOnClickListener(v1 -> {
@@ -256,9 +202,9 @@ public class Feed extends AppCompatActivity {
             ImageView imageView = friendView.findViewById(R.id.imageViewFriendProfile);
             imageView.setImageResource(Icons.getIcons().get(friend.getImage()-1));
 
-            username.setText(friend.getName());
-            kmAway.setText(friend.getStringMetersAway());
-            lastUpdated.setText(friend.getUpdateDateTime());
+            username.setText(friend.getUsername());
+            kmAway.setText(friend.getMetersAwayMessage());
+            lastUpdated.setText(friend.getUpdateTimeMessage());
 
             linearLayout.addView(friendView);
         }catch (Exception e){
@@ -305,13 +251,13 @@ public class Feed extends AppCompatActivity {
                    relativeLayout = findViewById(R.id.loadingLayoutFeed);
                });
 
-               if (!canUpdate("Friends") && myFriends!=null){
+               if (!canUpdate("Friends") && friends!=null){
                    runOnUiThread(() -> {
                        message.setVisibility(View.INVISIBLE);
                        linearLayout.removeAllViews();
                        relativeLayout.setVisibility(View.INVISIBLE);
-                       for (int i = 0; i < myFriends.size(); i++) {
-                           addView(myFriends.get(i));
+                       for (int i = 0; i < friends.size(); i++) {
+                           addView(friends.get(i));
                        }
                    });
                    runOnUiThread(() -> {
@@ -320,44 +266,45 @@ public class Feed extends AppCompatActivity {
                    return null;
                }
 
-               ArrayList<User> temp = ServerSQL.getFriends(phone);
-//               ArrayList<User> real = ServerSQL.getFriendsRealLocations(phone);
-//               GeoPoint realLoc = ServerSQL.getRealLocation(phone);
-               //ServerSQL.uploadExperimentRealPositions(realLoc,temp,real);
+               ArrayList<User> friends = HttpHelper.getFriends(user.getPhone());
 
-               if (temp.isEmpty()){
-                   if (ServerSQL.isExecuted()){
-                       System.out.println("No friends!");
-                       runOnUiThread(() -> {
-                           message.setText(R.string.noFriends);
-                           message.setVisibility(View.VISIBLE);
-                           relativeLayout.setVisibility(View.INVISIBLE);
-                           linearLayout.removeAllViews();
-                       });
-                   }else{
-                       System.out.println("No connection!");
-                       runOnUiThread(() -> {
-                           message.setText(getString(R.string.Error));
-                           message.setVisibility(View.VISIBLE);
-                           relativeLayout.setVisibility(View.INVISIBLE);
-                           linearLayout.removeAllViews();
-                       });
-                   }
+               if (friends == null){
+                   System.out.println("No connection!");
+                   runOnUiThread(() -> {
+                       message.setText(getString(R.string.Error));
+                       message.setVisibility(View.VISIBLE);
+                       relativeLayout.setVisibility(View.INVISIBLE);
+                       linearLayout.removeAllViews();
+                   });
+
+                   runOnUiThread(() -> {
+                       swipeRefreshLayout.setRefreshing(false);
+                   });
+                   return null;
+               }else if (friends.isEmpty()){
+                   System.out.println("No friends!");
+                   runOnUiThread(() -> {
+                       message.setText(R.string.noFriends);
+                       message.setVisibility(View.VISIBLE);
+                       relativeLayout.setVisibility(View.INVISIBLE);
+                       linearLayout.removeAllViews();
+                   });
+
                    runOnUiThread(() -> {
                        swipeRefreshLayout.setRefreshing(false);
                    });
                    return null;
                }
 
-               myFriends = temp;
+               ArrayList<User> finalFriends = friends;
                runOnUiThread(() -> {
                    message.setVisibility(View.INVISIBLE);
                    linearLayout.removeAllViews();
                    relativeLayout.setVisibility(View.INVISIBLE);
-                   for (int i = 0; i < myFriends.size(); i++) {
-                       addView(myFriends.get(i));
+                   for (int i = 0; i < finalFriends.size(); i++) {
+                       addView(finalFriends.get(i));
                    }
-                   bundle.putParcelableArrayList("list",myFriends);
+                   bundle.putParcelableArrayList("friends_list", finalFriends);
                });
 
                runOnUiThread(() -> {
@@ -386,7 +333,6 @@ public class Feed extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
             System.out.println("Permission granted!");
-            myLocation = ServerSQL.getMyLocation(phone);
             AsyncTaskCreateList createList = new AsyncTaskCreateList();
             createList.execute();
         } else {
@@ -417,7 +363,7 @@ public class Feed extends AppCompatActivity {
                 Date now = new Date();
                 long diffInMillies = now.getTime() - Objects.requireNonNull(lastTimeUpdated).getTime();
                 long diffInSeconds = TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-                if (diffInSeconds<6){ //SECONDS PROTECTION
+                if (diffInSeconds<10){ //SECONDS PROTECTION
                     System.out.println("Aborted:"+key+" updated "+diffInSeconds+" seconds ago!");
                     return false;
                 }

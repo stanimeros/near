@@ -1,9 +1,11 @@
-package com.example.socialapp;
+package com.example.socialapp.methods.quad;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+
+import com.example.socialapp.GeoPoint;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -13,25 +15,24 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 
-public class KDTreeGroup {
+public class QuadTreeGroup {
     private static String input;
     private static Context context;
     private static int treeMaxPoints;
     private static int leafMaxPoints;
     private static ArrayList<Double> treeEdges = new ArrayList<>();
-    private static KDTree mainTree=null;
-    private static KDTree kdTrees[] =  new KDTree[1]; //UNFINISHED
+    private static QuadTree mainTree=null;
     private static int keyTree= -1;
 
     public static void Initialize(int treeMaxPoints, int leafMaxPoints, String input, Context context) {
         try {
-            KDTreeGroup.context = context;
-            KDTreeGroup.input = input;
-            KDTreeGroup.treeMaxPoints = treeMaxPoints;
-            KDTreeGroup.leafMaxPoints = leafMaxPoints;
+            QuadTreeGroup.context = context;
+            QuadTreeGroup.input = input;
+            QuadTreeGroup.treeMaxPoints = treeMaxPoints;
+            QuadTreeGroup.leafMaxPoints = leafMaxPoints;
             Gson gson = new Gson();
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            String json = prefs.getString("KDTrees", "");
+            String json = prefs.getString("QuadTrees", "");
             String[] tempStringArray = gson.fromJson(json,String[].class);
             if (tempStringArray==null){
                 System.out.println("Generating map..");
@@ -65,12 +66,13 @@ public class KDTreeGroup {
                 mainTree = Objects.requireNonNull(getMainTree(target));
                 keyTree = getKeyTree(target);
             }
+            //QuadTree mainTree = Objects.requireNonNull(getMainTree(target));
             ArrayList<GeoPoint> neighbors = mainTree.getKNearestList(target,k,distanceInKm);
 
             double radius = neighbors.get(neighbors.size()-1).distanceTo(target);
             System.out.println("Searched in main-tree and found "+neighbors.size()+" point(s) in Radius "+(int) (radius)+"m");
 
-            ArrayList<KDTree> treesInRadius= Objects.requireNonNull(getTreesInRadius(target,radius));
+            ArrayList<QuadTree> treesInRadius = Objects.requireNonNull(getTreesInRadius(target,radius));
             if (treesInRadius.size()>1){
                 System.out.println("Radius includes "+treesInRadius.size()+" trees!");
                 neighbors.removeAll(neighbors);
@@ -91,9 +93,9 @@ public class KDTreeGroup {
                     });
                     threads[i].start();
                 }
-                for (Thread thread : threads) {
-                    thread.join();
-                    System.out.println(thread.getName() + " finished!");
+                for (int i=0; i<threads.length;i++){
+                    threads[i].join();
+                    System.out.println(threads[i].getName() + " finished!");
                 }
                 //All threads finished!
 
@@ -101,7 +103,6 @@ public class KDTreeGroup {
                 //for (int i=0;i<treesInRadius.size();i++){
                 //    neighbors.addAll(treesInRadius.get(i).findNearestNeighborsInRadius(target,(radius/1000)));
                 //}
-
                 Collections.sort(Objects.requireNonNull(neighbors), (o1, o2) -> {
                     Float f1 = o1.distanceTo(target);
                     Float f2 = o2.distanceTo(target);
@@ -120,20 +121,19 @@ public class KDTreeGroup {
                 return neighbors;
             }
         }catch (Exception e){
-            System.out.println("Error in findKNearestNeighbors!");
             e.printStackTrace();
+            System.out.println("Error in findKNearestNeighbors");
             return null;
         }
     }
 
-    private static KDTree getMainTree(GeoPoint point){
+    private static QuadTree getMainTree(GeoPoint point){
         try {
             for (int i=0;i<treeEdges.size();i++){
                 if (treeEdges.get(i)<point.getLon()){
                     return getTree(i+1);
                 }
             }
-            kdTrees =  new KDTree[treeEdges.size()];
             return getTree(treeEdges.size());
         }catch (Exception e){
             System.out.println("Error in getMainTree(point)!");
@@ -157,10 +157,10 @@ public class KDTreeGroup {
         }
     }
 
-    private static ArrayList<KDTree> getTreesInRadius(GeoPoint point, double Radius){
+    private static ArrayList<QuadTree> getTreesInRadius(GeoPoint point, double Radius){
         try {
             int last = 0;
-            ArrayList<KDTree> treesInRadius = new ArrayList<>();
+            ArrayList<QuadTree> treesInRadius = new ArrayList<>();
 
             for (int i=0;i<treeEdges.size();i++){
                 if (new GeoPoint(treeEdges.get(i).floatValue(),point.getLat()).distanceTo(point)<Radius){
@@ -190,7 +190,7 @@ public class KDTreeGroup {
         }
     }
 
-    private static KDTree generateTree(int n){
+    private static QuadTree generateTree(int n){
         try {
             BufferedReader file = new BufferedReader(new InputStreamReader(context.getAssets().open(input)));
             for (int i=0;i<(n-1)*treeMaxPoints;i++){
@@ -210,8 +210,8 @@ public class KDTreeGroup {
                 }
             }
             file.close();
-            KDTree tree = new KDTree(points,leafMaxPoints);
-            saveTree(n,tree);
+            QuadTree tree = new QuadTree(points,leafMaxPoints);
+            //saveTree(n,tree);
             return tree;
         }catch (Exception e){
             System.out.println("Error in generateTree!");
@@ -277,37 +277,24 @@ public class KDTreeGroup {
             return -1;
         }
     }
-
-    private static KDTree getTree(int n){ //Get the tree with the number n
+    private static QuadTree getTree(int n){ //Get the tree with the number n
         try {
-
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            String key = "KDTree"+n;
+            String key = "QuadTree"+n;
             String json = prefs.getString(key, "");
             if (json.isEmpty()){
                 return generateTree(n);
             }
             printSize(json,key);
-            return new Gson().fromJson(json, KDTree.class);
-
-            /*
-            String fileName = "KDTree" + n + ".tree";
-            FileInputStream fis = context.openFileInput(fileName);
-            ObjectInputStream is = new ObjectInputStream(fis);
-            KDTree tree = (KDTree) is.readObject();
-            is.close();
-            fis.close();
-            return tree;
-
-             */
+            return new Gson().fromJson(json, QuadTree.class);
         }catch (Exception e){
             System.out.println("Error in getTree(n)!");
             e.printStackTrace();
-            return generateTree(n);
+            return null;
         }
     }
 
-    private static void saveTree(int n, KDTree tree) {
+    private static void saveTree(int n, QuadTree tree) {
         try{
             new Thread(() -> {
                 try {
@@ -316,21 +303,9 @@ public class KDTreeGroup {
                     SharedPreferences.Editor prefsEditor = prefs.edit();
                     Gson gson = new Gson();
                     String json = gson.toJson(tree);
-                    String key = "KDTree"+n;
+                    String key = "QuadTree"+n;
                     prefsEditor.putString(key, json);
                     prefsEditor.apply();
-
-                    /*
-                    // write object to file
-                    String fileName = "KDTree" + n + ".tree";
-                    FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-                    ObjectOutputStream os = new ObjectOutputStream(fos);
-                    os.writeObject(tree);
-                    os.close();
-                    fos.close();
-
-                     */
-
                     System.out.println("Tree " + n + " saved locally!");
                 }catch (Exception e){
                     e.printStackTrace();
@@ -348,10 +323,9 @@ public class KDTreeGroup {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                 SharedPreferences.Editor prefsEditor = prefs.edit();
                 String json = new Gson().toJson(trees);
-                prefsEditor.putString("KDTrees", json);
+                prefsEditor.putString("QuadTrees", json);
                 prefsEditor.apply();
             }catch (Exception e){
-                System.out.println("Error in saveTreeGroup!");
                 e.printStackTrace();
             }
         }).start();

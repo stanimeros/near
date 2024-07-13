@@ -24,4 +24,5 @@
     <string name="add">Add</string>
     <string name="_6980911668">6980911668</string>
     <string name="username_sent_you_a_friend_request">username sent you a friend request</string>
+    <string name="grant_permissions">Grant Permissions</string>
 </resources>

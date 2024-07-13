@@ -57,18 +57,18 @@
         android:id="@+id/textViewFriendUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:fontFamily="sans-serif-light"
         android:gravity="center|center_horizontal"
         android:text="@string/username"
         android:textColor="@color/text"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewFriendProfile"
-        app:layout_constraintEnd_toStartOf="@+id/textViewFriendKmAway"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/imageViewFriendProfile"
         app:layout_constraintTop_toTopOf="@+id/imageViewFriendProfile" />
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/textViewFriendLastUpdated"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -83,6 +83,7 @@
         app:layout_constraintStart_toEndOf="@+id/textViewFriendKmAway" />
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/textViewFriendKmAway"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

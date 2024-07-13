@@ -1,11 +1,20 @@
 package com.example.socialapp;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.View;
+import android.widget.Button;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import com.example.socialapp.methods.RTreeHelper;
 import com.example.socialapp.methods.SQLiteDefault;
 import com.example.socialapp.methods.SQLiteRTree;
@@ -35,18 +44,19 @@ public class MainActivity extends AppCompatActivity {
 
     public static int kmNum = 5;
 
-    public static String method = "directSpatialite";  //1:linear 2:sqlite_default, sqlite_rtree, sqlite_spatialite 3:sqlserver 4:kd 5:quad 6:rtree 7:directSpatialite 8:directQuadTree
+    public static String method = "sqlite_spatialite";  //1:linear 2:sqlite_default, sqlite_rtree, sqlite_spatialite 3:sqlserver 4:kd 5:quad 6:rtree 7:directSpatialite 8:directQuadTree
     public static double starting_km = 0.05; //CAN BE MODIFIED
     public static int time = 0;
 
     public static int count = 0;
 
+    //LOCAL VARIABLES
+    private Thread thread = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        Thread thread = null;
         HttpHelper.context = getBaseContext();
         try {
             if (Objects.equals(method,"sqlite_rtree")){
@@ -159,20 +169,33 @@ public class MainActivity extends AppCompatActivity {
                 thread.start();
             }
 
-            if (prefs.contains("phone")){
-                String phone = prefs.getString("phone","Error");
-                String username = prefs.getString("username","Error");
-                String joinDate = prefs.getString("joinDate","Error");
-                int image = prefs.getInt("image",0);
+            Button permissionsButton = findViewById(R.id.button_permissions);
+            permissionsButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    checkPermissions();
+                }
+            });
 
-                User user = new User(phone, username, image);
-                user.setJoinDate(joinDate);
-                goToFeed(user, thread);
-            }else{
-                goToSignUp();
-            }
+            checkPermissions();
         }catch (Exception e){
             e.printStackTrace();
+        }
+    }
+
+    private void goToNextActivity(){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (prefs.contains("phone")){
+            String phone = prefs.getString("phone","Error");
+            String username = prefs.getString("username","Error");
+            String joinDate = prefs.getString("joinDate","Error");
+            int image = prefs.getInt("image",0);
+
+            User user = new User(phone, username, image);
+            user.setJoinDate(joinDate);
+            goToFeed(user, thread);
+        }else{
+            goToSignUp();
         }
     }
 
@@ -210,6 +233,29 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             // The file doesn't exist or there was an error
             return false;
+        }
+    }
+
+    private void checkPermissions() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,}, 1);
+            }else{
+                goToNextActivity();
+            }
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+            System.out.println("Permission granted!");
+            goToNextActivity();
+        } else {
+            System.out.println("Try again!");
         }
     }
 }

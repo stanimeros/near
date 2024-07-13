@@ -13,7 +13,7 @@ import org.json.JSONObject;
 
 public class HttpHelper {
     static Context context;
-    private static final String apiURL = "https://reserwave.com/development/near/";
+    private static final String apiURL = "https://stanimeros.com/near/api/";
 
     public static ArrayList<GeoPoint> getKNearestList(GeoPoint geoPoint,int k,double distanceInKm) {
         try {
@@ -118,10 +118,9 @@ public class HttpHelper {
     }
 
     public static ArrayList<User> getFriendRequests(String phone) {
+        String endpoint = apiURL + "get_friend_requests.php?" +
+                "phone=" + phone;
         try {
-            String endpoint = apiURL + "get_friend_requests.php?" +
-                    "phone=" + phone;
-
             JSONObject jsonObject = getResponse(endpoint);
             if (jsonObject != null) {
                 ArrayList<User> users = new ArrayList<>();
@@ -138,6 +137,7 @@ public class HttpHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println(endpoint);
         }
         return null;
     }

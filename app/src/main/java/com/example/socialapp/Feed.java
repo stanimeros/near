@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.helper.widget.Layer;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -16,10 +18,11 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -39,6 +42,8 @@ public class Feed extends AppCompatActivity {
     private ArrayList<User> friends;
     private LinearLayout linearLayout;
     private RelativeLayout relativeLayout;
+    private RecyclerView recyclerView;
+    private CustomAdapter customAdapter;
     private View selectedView ;
     private TextView message;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -48,8 +53,6 @@ public class Feed extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
         try {
-            checkPermission();
-
             bundle = getIntent().getExtras();
             user = bundle.getParcelable("user");
             friends = bundle.getParcelableArrayList("friends_list");
@@ -64,7 +67,6 @@ public class Feed extends AppCompatActivity {
             swipeRefreshLayout = findViewById(R.id.swipeToRefreshFeed);
             swipeRefreshLayout.setOnRefreshListener(() -> {
                 new Thread(() -> {
-                    checkPermission();
                     AsyncTaskCreateList createList = new AsyncTaskCreateList();
                     createList.execute();
                     System.out.println("List refreshed!");
@@ -148,6 +150,13 @@ public class Feed extends AppCompatActivity {
 
             AsyncTaskCreateList createList = new AsyncTaskCreateList();
             createList.execute();
+
+
+            recyclerView = findViewById(R.id.recyclerViewFeed);
+            customAdapter = new CustomAdapter(new ArrayList<>());
+            recyclerView.setAdapter(customAdapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            customAdapter.enableSwipeToDelete(recyclerView);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -179,8 +188,7 @@ public class Feed extends AppCompatActivity {
                 });
 
                 callButton.setOnClickListener(v1 -> {
-                    Intent intent = new Intent(Intent.ACTION_CALL);
-                    intent.setData(Uri.parse("tel:" +friend.getPhone()));
+                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + friend.getPhone()));// Initiates the Intent
                     startActivity(intent);
                 });
 
@@ -259,6 +267,7 @@ public class Feed extends AppCompatActivity {
                        for (int i = 0; i < friends.size(); i++) {
                            addView(friends.get(i));
                        }
+                       customAdapter.updateData(friends);
                    });
                    runOnUiThread(() -> {
                        swipeRefreshLayout.setRefreshing(false);
@@ -305,6 +314,8 @@ public class Feed extends AppCompatActivity {
                        addView(finalFriends.get(i));
                    }
                    bundle.putParcelableArrayList("friends_list", finalFriends);
+
+                   customAdapter.updateData(friends);
                });
 
                runOnUiThread(() -> {
@@ -314,29 +325,6 @@ public class Feed extends AppCompatActivity {
                e.printStackTrace();
            }
             return null;
-        }
-    }
-
-    public void checkPermission() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                    checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION,}, 1);
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-            System.out.println("Permission granted!");
-            AsyncTaskCreateList createList = new AsyncTaskCreateList();
-            createList.execute();
-        } else {
-            checkPermission();
         }
     }
 
@@ -382,3 +370,5 @@ public class Feed extends AppCompatActivity {
     @Override
     public void onBackPressed() {}
 }
+
+

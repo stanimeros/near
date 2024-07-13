@@ -28,9 +28,11 @@ public class User implements Parcelable {
     public String getPhone() {
         return phone;
     }
+
     public void setUsername(String username){
         this.username = username;
     }
+
     public String getUsername() {
         return username;
     }
@@ -38,6 +40,7 @@ public class User implements Parcelable {
     public void setImage(int image){
         this.image = image;
     }
+
     public int getImage() {
         return image;
     }

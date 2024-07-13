@@ -25,10 +25,10 @@
 
     <Button
         android:id="@+id/buttonSendRequest"
-        android:layout_width="70dp"
+        android:layout_width="80dp"
         android:layout_height="35dp"
         android:layout_marginStart="16dp"
-        android:background="@color/base2"
+        android:background="@drawable/rounded_corner"
         android:fontFamily="sans-serif-light"
         android:text="@string/add"
         android:textSize="18sp"

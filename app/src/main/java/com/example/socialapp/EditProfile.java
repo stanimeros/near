@@ -19,24 +19,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Spinner;
-
 import com.example.socialapp.tools.Icons;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 public class EditProfile extends AppCompatActivity {
     private Bundle bundle;
     private User user;
     private Flow flowLayout;
     private ConstraintLayout flowConstraintLayout;
-
     private View selectedView;
     private Integer choice;
     private Integer views;
-
     private EditText editText;
 
     @Override

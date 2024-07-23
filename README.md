@@ -1,14 +1,15 @@
 # Near
 
-Near is a social networking application developed as part of an undergraduate thesis at the University of Macedonia. It prioritizes privacy using the Two Hop Privacy algorithm and offers location-based services within a specified range.
+Near is a social networking android application developed as part of an undergraduate thesis at the University of Macedonia. It prioritizes privacy through the implementation of the Two Hop Privacy algorithm. Users can view nearby friends based on shared points of interest (POIs) as their location. It serves as an experimental environment to explore efficient methods, including SQLite, Spatialite, KD-Tree, R-Tree, QD-Tree and web service, for integrating and querying location data while prioritizing user privacy.
 
 #### [New Version in Flutter](https://github.com/stanimeros/near-flutter)
 
 ## Features
 
-- **Privacy Focus**: Utilizes the Two Hop Privacy algorithm to enhance user privacy.
-- **Location-based Services**: Provides functionalities based on the user's proximity to the University of Macedonia (within 100km).
-- **Multiple Data Handling Methods**: Supports various methods for efficient data handling and retrieval, tailored to different dataset sizes and computational capabilities.
+- **Social Networking**: Users can send friend requests and build friendships within the app.
+- **Location-Based Friend Finder**: View friends who are nearby based on shared points of interest (POIs).
+- **Privacy-First**: Implements the Two Hop Privacy algorithm to prioritize user privacy.
+- **OpenStreetMap Integration**: Utilizes points of interest (POIs) data from OpenStreetMap (OSM).
 
 ## Requirements
 

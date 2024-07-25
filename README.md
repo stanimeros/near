@@ -53,8 +53,6 @@ Near is a social networking android application developed as part of an undergra
 <img src="https://github.com/user-attachments/assets/3f9e6599-6604-40ce-92ad-9749e2cd9c86" width="30%"></img> 
 <img src="https://github.com/user-attachments/assets/14d80355-19da-4d60-96fe-69459d437f4c" width="30%"></img>
 </p>
-<br />
-<br />
 <img src="https://github.com/user-attachments/assets/494005cc-ce86-4a50-b10f-bfd903c73da6" width="97%"></img> 
 
 

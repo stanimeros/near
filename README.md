@@ -44,16 +44,17 @@ Near is a social networking android application developed as part of an undergra
 - **MyLocation.java**: Executes the selected method for location-based operations.
 
 <p align="center">
-<img src="https://github.com/user-attachments/assets/82a38dce-d459-4f26-b4bc-e5f6615dd564" width="30%"></img> 
-<img src="https://github.com/user-attachments/assets/a61f2024-3c2b-40c6-83c0-b8dfc0d8ed38" width="30%"></img> 
-<img src="https://github.com/user-attachments/assets/91583066-e6f4-4051-9c5e-8695bc12b144" width="30%"></img> 
+<img src="https://github.com/user-attachments/assets/078c3a10-82d3-4287-a577-7932414104e2" width="30%"></img> 
+<img src="https://github.com/user-attachments/assets/29ec595b-9d4a-4a53-8e71-77d3734ba489" width="30%"></img>
+<img src="https://github.com/user-attachments/assets/af9ebc5d-31c0-44b7-b5b9-fc245c8892e5" width="30%"></img> 
 </p>
 <p align="center">
-<img src="https://github.com/user-attachments/assets/eba43212-982a-4113-9041-5cdfb4f7aa96" width="30%"></img> 
-<img src="https://github.com/user-attachments/assets/3f9e6599-6604-40ce-92ad-9749e2cd9c86" width="30%"></img> 
-<img src="https://github.com/user-attachments/assets/14d80355-19da-4d60-96fe-69459d437f4c" width="30%"></img>
+<img src="https://github.com/user-attachments/assets/0cca82b0-1699-4e9a-8bc0-e375f90e5c7d" width="30%"></img> 
+<img src="https://github.com/user-attachments/assets/ea2c3509-e891-4331-91f6-3aff920a1a0a" width="30%"></img> 
+<img src="https://github.com/user-attachments/assets/4704784a-2c5b-4e66-8985-df4f7c03cbdd" width="30%"></img>
 </p>
-<img src="https://github.com/user-attachments/assets/494005cc-ce86-4a50-b10f-bfd903c73da6" width="97%"></img> 
+<img src="https://github.com/user-attachments/assets/494005cc-ce86-4a50-b10f-bfd903c73da6" width="100%"></img> 
+
 
 
 

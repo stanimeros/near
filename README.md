@@ -39,7 +39,6 @@ Near is a social networking android application developed as part of an undergra
 
 ## Additional Notes
 
-- **100km Dataset**: Not included in assets due to size; handled separately.
 - **Feed.java**: Monitors GPS for location changes and initiates relevant processes.
 - **MyLocation.java**: Executes the selected method for location-based operations.
 

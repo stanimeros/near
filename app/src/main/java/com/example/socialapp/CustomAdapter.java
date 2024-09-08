@@ -119,7 +119,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
             new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
                     .addSwipeLeftBackgroundColor(Color.rgb(54,31,39))
-                    .addSwipeLeftActionIcon(R.drawable.removefriend32)
+                    .addSwipeLeftActionIcon(R.drawable.removefriend)
                     .setSwipeLeftLabelColor(Color.WHITE)
                     .create()
                     .decorate();

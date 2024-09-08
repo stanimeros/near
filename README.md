@@ -11,6 +11,12 @@ Near is a social networking android application developed as part of an undergra
 - **Privacy-First**: Implements the Two Hop Privacy algorithm to prioritize user privacy.
 - **OpenStreetMap Integration**: Utilizes points of interest (POIs) data from OpenStreetMap (OSM).
 
+## Demo Credentials
+
+To test the application, you can use the following demo credentials:
+- **Phone**: 6912345678
+- **Password**: test
+
 ## Requirements
 
 - **Minimum API Level**: API 21

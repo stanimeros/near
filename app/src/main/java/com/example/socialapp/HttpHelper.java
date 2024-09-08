@@ -70,7 +70,7 @@ public class HttpHelper {
     }
     public static boolean signUp(String phone, String username, String password) {
         if (phone.isEmpty() || username.isEmpty() || password.isEmpty() ||
-                phone.length()!=10 || username.length()<=3 || password.length()<=3){
+                phone.length()<8 || username.length()<=3 || password.length()<=3){
             return false; //Something is wrong!
         }
 

@@ -92,23 +92,23 @@ public class SignUp extends AppCompatActivity {
 
     private void goToFeed()
     {
+        User user = new User(phone.getText().toString(), username.getText().toString(), 1);
         Date currentDate = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = dateFormat.format(currentDate);
+        user.setJoinDate(formattedDate);
 
         SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(SignUp.this).edit();
-        prefEditor.putString("phone",phone.getText().toString());
-        prefEditor.putString("username",username.getText().toString());
-        prefEditor.putString("joinDate",formattedDate);
-        prefEditor.putInt("image",1);
+        prefEditor.putString("phone", user.getPhone());
+        prefEditor.putString("username",user.getUsername());
+        prefEditor.putString("joinDate",user.getJoinDate());
+        prefEditor.putInt("image",user.getImage());
         prefEditor.apply();
 
         Intent intent = new Intent(this, Feed.class);
         Bundle bundle = new Bundle();
-        bundle.putString("phone",phone.getText().toString());
-        bundle.putString("username",username.getText().toString());
-        bundle.putString("joinDate",formattedDate);
-        bundle.putInt("image",1);
+        bundle.putParcelable("user", user);
+
         intent.putExtras(bundle);
         startActivity(intent);
         overridePendingTransition(R.anim.fadein, R.anim.fadeout);

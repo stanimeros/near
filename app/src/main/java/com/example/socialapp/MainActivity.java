@@ -10,11 +10,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
 import com.example.socialapp.methods.RTreeHelper;
 import com.example.socialapp.methods.SQLiteDefault;
 import com.example.socialapp.methods.SQLiteRTree;
@@ -36,7 +34,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     //METHOD CONFIGURATION
-    public static int treeMaxPoints = 50000*1000; //CAN BE MODIFIED --BIG(*1000) FOR ONE TREE --SMALL(*1,2,3+) FOR MULTIPLE TREES
+    public static int treeMaxPoints = 50000*1; //CAN BE MODIFIED --BIG(*1000) FOR ONE TREE --SMALL(*1,2,3+) FOR MULTIPLE TREES
     public static int KDTreeLeafMaxPoints = 64; //CAN BE MODIFIED
     public static int QuadTreeLeafMaxPoints = 16; //CAN BE MODIFIED
 

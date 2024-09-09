@@ -1,8 +1,8 @@
 <?php
   $servername = "localhost";
-  $dbname = "re552547_near";
-  $username = "re552547_near_admin";
-  $password = "~O;J)sNMoSgb";
+  $dbname = getenv('DB_NAME') ?: 'default_db_name';
+  $username = getenv('DB_USERNAME') ?: 'default_username';
+  $password = getenv('DB_PASSWORD') ?: 'default_password';
 
   $conn = mysqli_connect($servername, $username, $password, $dbname);
 

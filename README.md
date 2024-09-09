@@ -17,6 +17,14 @@ To test the application, you can use the following demo credentials:
 - **Phone**: 6912345678
 - **Password**: test
 
+## API and Server Configuration
+
+- The repository includes the necessary API for the application.
+- By default, the app connects to our server.
+- To connect to your own server:
+  - Update the `connect.php` file in the API with your database credentials.
+  - Modify the server URL in the `HttpHelper.java` file within the app.
+
 ## Requirements
 
 - **Minimum API Level**: API 21

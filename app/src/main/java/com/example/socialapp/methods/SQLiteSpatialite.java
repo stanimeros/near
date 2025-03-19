@@ -18,10 +18,10 @@ import jsqlite.Stmt;
 
 public class SQLiteSpatialite extends SQLiteOpenHelper {
     Context context;
-    String table = "geopoints_" + MainActivity.kmNum + "km";
+    String table = "spatialite_geopoints_" + MainActivity.kmNum + "km";
 
     public SQLiteSpatialite(Context context) {
-        super(context, "geopoints_" + MainActivity.kmNum + "km", null, 1);
+        super(context, "spatialite_geopoints_" + MainActivity.kmNum + "km", null, 1);
         this.context = context;
     }
 

@@ -53,15 +53,17 @@
         android:id="@+id/buttonSignIn"
         android:layout_width="150dp"
         android:layout_height="45dp"
-        android:layout_marginTop="32dp"
         android:background="@drawable/rounded_corner"
         android:fontFamily="sans-serif-light"
         android:text="@string/sign_in"
         android:textColor="@color/textButtons"
         android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextSignInPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextSignInPassword"
+        app:layout_constraintVertical_bias="0.55" />
 
     <TextView
         android:id="@+id/textViewSignUp"

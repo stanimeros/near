@@ -9,7 +9,7 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 public class SQLiteCopyFromAssets extends SQLiteAssetHelper {
     Context context;
     public SQLiteCopyFromAssets(Context context) {
-        super(context, "geopoints_" + MainActivity.kmNum + "km", null, 1);
+        super(context, "spatialite_geopoints_" + MainActivity.kmNum + "km", null, 1);
         this.context = context;
     }
 

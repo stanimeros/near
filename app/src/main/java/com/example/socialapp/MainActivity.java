@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 thread = new Thread(() -> {
                     try {
                         long startTime = System.currentTimeMillis();
-                        if (doesDatabaseExistInAssets("geopoints_" + kmNum + "km")){
+                        if (doesDatabaseExistInAssets("spatialite_geopoints_" + kmNum + "km")){
                            SQLiteCopyFromAssets sqLiteCopyFromAssets = new SQLiteCopyFromAssets(getApplicationContext());
                             sqLiteCopyFromAssets.getWritableDb();
                         }

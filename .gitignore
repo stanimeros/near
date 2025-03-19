@@ -16,3 +16,5 @@ local.properties
 /.idea/
 /app/src/androidTest/
 /app/src/test/
+100km.txt
+100km_sorted.txt

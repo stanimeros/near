@@ -20,14 +20,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.example.socialapp.tools.Icons;
+import com.example.socialapp.tools.Scenarios;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -73,6 +73,9 @@ public class Feed extends AppCompatActivity {
                 }).start();
             });
 
+            Scenarios scenarios = new Scenarios();
+            scenarios.context = getApplicationContext();
+
             TextView textViewJoinDate = findViewById(R.id.textViewFeedJoinDate);
             @SuppressLint("SimpleDateFormat")
             Date date = new SimpleDateFormat("yyyy-MM-dd").parse(user.getJoinDate().toString());
@@ -80,7 +83,7 @@ public class Feed extends AppCompatActivity {
             @SuppressLint("SimpleDateFormat")
             String join = new SimpleDateFormat(" MMMM dd, yyyy").format(date);
             textViewJoinDate.setText(getString(R.string.Member) + join);
-            textViewJoinDate.setOnClickListener(v -> doRefresh());
+            textViewJoinDate.setOnClickListener(v -> scenarios.runAllScenarios());
 
             ImageView imageViewEdit = findViewById(R.id.imageViewFeedToEdit);
             imageViewEdit.setOnClickListener(v -> goToEditProfile());

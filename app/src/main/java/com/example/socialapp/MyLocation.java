@@ -22,39 +22,39 @@ public class MyLocation {
     long tempMillis;
     ArrayList<GeoPoint> tempList;
 
-    public void setMyPointOfInterestSearch(GeoPoint target, String phone,Context context){
+    public void setMyPointOfInterestSearch(GeoPoint target, String phone, Context context){
         String method = MainActivity.method;
         int k = MainActivity.k;
 
         if (target.distanceTo(pamak)>MainActivity.kmNum*1000 + 1000 && !method.contains("direct")){
             System.out.println("Phone is too far from pamak!"); //Prevent calculations far away from dataset's center!
             MainActivity.method = "directQuadTree";
-            directDownloadQuadTree(target,phone,k);
+            directDownloadQuadTree(target, k);
 
             HttpHelper.setLocation(myPointOfInterest,phone);
             return;
         }
 
         if (Objects.equals(method, "linear")){
-            setMyPointOfInterestLinearSearch(target,phone,k,context);
+            setMyPointOfInterestLinearSearch(target, k,context);
         }else if(Objects.equals(method, "sqlite_default")) {
-            setMyPointOfInterestSQLiteDefaultSearch(target, phone, k, context);
+            setMyPointOfInterestSQLiteDefaultSearch(target, k, context);
         }else if(Objects.equals(method, "sqlite_rtree")) {
-            setMyPointOfInterestSQLiteRTreeSearch(target, phone, k, context);
+            setMyPointOfInterestSQLiteRTreeSearch(target, k, context);
         }else if(Objects.equals(method, "sqlite_spatialite")){
-            setMyPointOfInterestSQLiteSpatialiteSearch(target,phone,k,context);
+            setMyPointOfInterestSQLiteSpatialiteSearch(target, k,context);
         }else if(Objects.equals(method, "sqlserver")){
-            setMyPointOfInterestSQLServerSearch(target,phone,k);
+            setMyPointOfInterestSQLServerSearch(target, k);
         }else if (Objects.equals(method, "kd")){
-            setMyPointOfInterestKDTreeSearch(target,phone,k,context);
+            setMyPointOfInterestKDTreeSearch(target, k,context);
         }else if (Objects.equals(method, "quad")){
-            setMyPointOfInterestQuadTreeSearch(target,phone,k,context);
+            setMyPointOfInterestQuadTreeSearch(target, k,context);
         }else if (Objects.equals(method, "rtree")){
-            setMyPointOfInterestRTreeSearch(target,phone,k);
+            setMyPointOfInterestRTreeSearch(target, k);
         }else if (Objects.equals(method, "directQuadTree")){
-            directDownloadQuadTree(target,phone,k);
+            directDownloadQuadTree(target, k);
         }else if (Objects.equals(method, "directSpatialite")){
-            directDownloadSpatialite(target,phone,k,context);
+            directDownloadSpatialite(target, k,context);
         }
 
 //        ServerSQL.uploadResults(tempMillis,phone);
@@ -76,7 +76,7 @@ public class MyLocation {
         }
         System.out.println("Last point of list: "+ (list.size())+") Lon: "+list.get(list.size()-1).getLon() +" Lat: "+list.get(list.size()-1).getLat()+ " distance "+target.distanceTo(list.get(list.size()-1)));
     }
-    public void setMyPointOfInterestLinearSearch(GeoPoint target, String phone, int k, Context context) {
+    public void setMyPointOfInterestLinearSearch(GeoPoint target, int k, Context context) {
         try {
             long startTime = System.currentTimeMillis();
             System.out.println("Generating new location using Linear Search!");
@@ -111,7 +111,7 @@ public class MyLocation {
         }
     }
 
-    public void setMyPointOfInterestSQLiteDefaultSearch(GeoPoint target, String phone, int k,Context context) {
+    public void setMyPointOfInterestSQLiteDefaultSearch(GeoPoint target, int k,Context context) {
         try {
             long startTime = System.currentTimeMillis();
             SQLiteDefault sqLiteDefault = new SQLiteDefault(context);
@@ -145,7 +145,7 @@ public class MyLocation {
         }
     }
 
-    public void setMyPointOfInterestSQLiteRTreeSearch(GeoPoint target, String phone, int k,Context context) { //FAILED
+    public void setMyPointOfInterestSQLiteRTreeSearch(GeoPoint target, int k,Context context) { //FAILED
         try {
             long startTime = System.currentTimeMillis();
             SQLiteRTree sqLiteRTree = new SQLiteRTree(context);
@@ -181,7 +181,7 @@ public class MyLocation {
         }
     }
 
-    public void setMyPointOfInterestSQLiteSpatialiteSearch(GeoPoint target, String phone, int k,Context context) {
+    public void setMyPointOfInterestSQLiteSpatialiteSearch(GeoPoint target, int k,Context context) {
         try {
             long startTime = System.currentTimeMillis();
             SQLiteSpatialite sqLiteSpatialite = new SQLiteSpatialite(context);
@@ -218,7 +218,7 @@ public class MyLocation {
         }
     }
 
-    public void setMyPointOfInterestSQLServerSearch(GeoPoint target, String phone, int k) {
+    public void setMyPointOfInterestSQLServerSearch(GeoPoint target, int k) {
         try {
             long startTime = System.currentTimeMillis();
             System.out.println("Generating new location using SQLServer!");
@@ -253,7 +253,7 @@ public class MyLocation {
         }
     }
 
-    public void setMyPointOfInterestKDTreeSearch(GeoPoint target, String phone, int k, Context context){
+    public void setMyPointOfInterestKDTreeSearch(GeoPoint target, int k, Context context){
         try {
             long startTime = System.currentTimeMillis();
             //KDTreeGroup group = new KDTreeGroup(MainActivity.treeMaxPoints,MainActivity.KDTreeLeafMaxPoints,MainActivity.sorted_input,context);
@@ -289,7 +289,7 @@ public class MyLocation {
         }
     }
 
-    public void setMyPointOfInterestQuadTreeSearch(GeoPoint target, String phone, int k, Context context){
+    public void setMyPointOfInterestQuadTreeSearch(GeoPoint target, int k, Context context){
         try {
             long startTime = System.currentTimeMillis();
             //QuadTreeGroup group = new QuadTreeGroup(MainActivity.treeMaxPoints,MainActivity.QuadTreeLeafMaxPoints,MainActivity.sorted_input,context);
@@ -325,7 +325,7 @@ public class MyLocation {
         }
     }
 
-    public void setMyPointOfInterestRTreeSearch(GeoPoint target, String phone, int k){
+    public void setMyPointOfInterestRTreeSearch(GeoPoint target, int k){
         try {
             long startTime = System.currentTimeMillis();
             System.out.println("Generating new location using RTree Search!");
@@ -361,7 +361,7 @@ public class MyLocation {
     }
 
 
-    public void directDownloadQuadTree(GeoPoint target, String phone, int k){
+    public void directDownloadQuadTree(GeoPoint target, int k){
         try {
             long startTime = System.currentTimeMillis();
             System.out.println("Generating new location using OSM Direct Download and Quad Tree!");
@@ -404,7 +404,7 @@ public class MyLocation {
         }
     }
 
-    public void directDownloadSpatialite(GeoPoint target, String phone, int k, Context context){
+    public void directDownloadSpatialite(GeoPoint target, int k, Context context){
         try {
             long startTime = System.currentTimeMillis();
             System.out.println("Generating new location using Test Method Search!");

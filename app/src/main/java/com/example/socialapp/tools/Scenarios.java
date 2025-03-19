@@ -42,43 +42,42 @@ public class Scenarios {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void runAllScenarios() {
         // 1. Fixed k=25 with varying dataset sizes
+        MainActivity.k = 25;
         for (int datasetSize : datasetSizes) {
-            MainActivity.k = 25;
             MainActivity.kmNum = datasetSize;
 
             try {
                 SQLiteDefault sqLiteDefault = new SQLiteDefault(context);
                 SQLiteSpatialite sqLiteSpatialite = new SQLiteSpatialite(context);
 
-                KDTreeGroup.Initialize(MainActivity.treeMaxPoints, MainActivity.KDTreeLeafMaxPoints, MainActivity.kmNum + "km_sorted.txt", context);
-                QuadTreeGroup.Initialize(MainActivity.treeMaxPoints, MainActivity.QuadTreeLeafMaxPoints, MainActivity.kmNum + "km_sorted.txt", context);
+                KDTreeGroup.Initialize(50000, 64, MainActivity.kmNum + "km_sorted.txt", context);
+                QuadTreeGroup.Initialize(50000, 16, MainActivity.kmNum + "km_sorted.txt", context);
                 RTreeHelper.createRTree(context);
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            
             for (String method : methods) {
                 runExperiment(method, datasetSize, 25);
             }
         }
 
+
+        MainActivity.kmNum = 25;
+        try {
+            SQLiteDefault sqLiteDefault = new SQLiteDefault(context);
+            SQLiteSpatialite sqLiteSpatialite = new SQLiteSpatialite(context);
+
+            KDTreeGroup.Initialize(50000, 64, MainActivity.kmNum + "km_sorted.txt", context);
+            QuadTreeGroup.Initialize(50000, 16, MainActivity.kmNum + "km_sorted.txt", context);
+            RTreeHelper.createRTree(context);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         // 2. Fixed dataset size (25km) with varying k
         for (int k : kValues) {
             MainActivity.k = k;
-            MainActivity.kmNum = 25;
-
-            try {
-                SQLiteDefault sqLiteDefault = new SQLiteDefault(context);
-                SQLiteSpatialite sqLiteSpatialite = new SQLiteSpatialite(context);
-
-                KDTreeGroup.Initialize(MainActivity.treeMaxPoints,MainActivity.KDTreeLeafMaxPoints,MainActivity.kmNum + "km_sorted.txt", context);
-                QuadTreeGroup.Initialize(MainActivity.treeMaxPoints,MainActivity.QuadTreeLeafMaxPoints,MainActivity.kmNum + "km_sorted.txt", context);
-                RTreeHelper.createRTree(context);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
             for (String method : methods) {
                 runExperiment(method, 25, k);
             }
@@ -98,25 +97,25 @@ public class Scenarios {
 
                 switch (method) {
                     case "brute_force":
-                        myLocation.setMyPointOfInterestLinearSearch(point, "phone", k, context);
+                        myLocation.setMyPointOfInterestLinearSearch(point, k, context);
                         break;
                     case "kdtree":
-                        myLocation.setMyPointOfInterestKDTreeSearch(point, "phone", k, context);
+                        myLocation.setMyPointOfInterestKDTreeSearch(point, k, context);
                         break;
                     case "quadtree":
-                        myLocation.setMyPointOfInterestQuadTreeSearch(point, "phone", k, context);
+                        myLocation.setMyPointOfInterestQuadTreeSearch(point, k, context);
                         break;
                     case "rtree":
-                        myLocation.setMyPointOfInterestRTreeSearch(point, "phone", k);
+                        myLocation.setMyPointOfInterestRTreeSearch(point, k);
                         break;
                     case "sqlite":
-                        myLocation.setMyPointOfInterestSQLiteDefaultSearch(point, "phone", k, context);
+                        myLocation.setMyPointOfInterestSQLiteDefaultSearch(point, k, context);
                         break;
                     case "spatialite":
-                        myLocation.setMyPointOfInterestSQLiteSpatialiteSearch(point, "phone", k, context);
+                        myLocation.setMyPointOfInterestSQLiteSpatialiteSearch(point, k, context);
                         break;
                     // case "mariadb":
-                    //     myLocation.setMyPointOfInterestSQLServerSearch(point, "phone", k);
+                    //     myLocation.setMyPointOfInterestSQLServerSearch(point, k);
                     //     break;
                 }
             }

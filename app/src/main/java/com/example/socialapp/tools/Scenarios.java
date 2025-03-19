@@ -17,11 +17,11 @@ public class Scenarios {
     public Context context;
     // Test points around the organization
     private final GeoPoint[] points = new GeoPoint[] {
-        new GeoPoint("40.6396", "22.9346"),
-        new GeoPoint("40.6431", "22.9453"),
-        new GeoPoint("40.6392", "22.9575"),
-        new GeoPoint("40.6207", "22.9703"),
-        new GeoPoint("40.6078", "22.9592")
+        new GeoPoint("22.9346", "40.6396"),
+        new GeoPoint("22.9453", "40.6431"),
+        new GeoPoint("22.9575", "40.6392"),
+        new GeoPoint("22.9703", "40.6207"),
+        new GeoPoint("22.9592", "40.6078")
     };
 
     // Dataset configurations
